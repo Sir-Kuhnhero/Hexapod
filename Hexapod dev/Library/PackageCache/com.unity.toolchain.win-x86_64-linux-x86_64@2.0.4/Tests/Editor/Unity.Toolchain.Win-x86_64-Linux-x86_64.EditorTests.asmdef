@@ -1,0 +1,21 @@
+{
+    "name": "Unity.Toolchain.Win-x86_64-Linux-x86_64.EditorTests",
+    "references": [
+        "Unity.Toolchain.Editor",
+        "Unity.Sysroot"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "versionDefines": [
+        {
+            "name": "Unity",
+            "expression": "(0,2022.1.23f1)",
+            "define": "IL2CPP_LEGACY_API_PRESENT"
+        }
+    ]
+}
