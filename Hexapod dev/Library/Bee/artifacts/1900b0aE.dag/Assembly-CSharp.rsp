@@ -358,12 +358,12 @@
 -r:"Library/Bee/artifacts/1900b0aE.dag/Unity.VSCode.Editor.ref.dll"
 -r:"Library/Bee/artifacts/1900b0aE.dag/UnityEditor.UI.ref.dll"
 -r:"Library/Bee/artifacts/1900b0aE.dag/UnityEngine.UI.ref.dll"
-"Assets/Script/IK/HexapodLeg.cs"
 "Assets/Script/IK/IKArm.cs"
+"Assets/Script/IK/IKArmAnalytical.cs"
 "Assets/Script/PID/AutomaticPIDTuner.cs"
 "Assets/Script/PID/PIDController.cs"
-"Assets/Script/PIPD/AutomaticPIDPTuner.cs"
 "Assets/Script/PIPD/PIDPController.cs"
+"Assets/Script/Servo.cs"
 -langversion:9.0
 
 /deterministic
