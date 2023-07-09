@@ -1,0 +1,25 @@
+{
+  "folders": [
+	{
+		"name": "Hexapod_code",
+		"path": "."
+	},
+	{
+		"name": "reveiver_code",
+		"path": "../../Arduino/DAVE/receiver/reveiver_code"
+	},
+	{
+		"name": "simpleAudioplayer_code",
+		"path": "../../Arduino/simpleAudioplayer/simpleAudioplayer_code"
+	},
+	{
+		"name": "basic Mega",
+		"path": "../../PlatformIO/Projects/basic Mega"
+	}
+],
+"settings": {
+	"files.associations": {
+		"cmath": "cpp"
+	}
+}
+}
