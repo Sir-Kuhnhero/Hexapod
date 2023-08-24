@@ -58,8 +58,8 @@ void loop()
 
 #endif
 
-  Servo_update();
-  // delay(500);
+  // Servo_update();
+  //  delay(500);
 
   // Serial.println("end");
 

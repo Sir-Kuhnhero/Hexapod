@@ -41,7 +41,7 @@ bool Servo_update()
     int minVal = -10;
     int maxVal = 85;
 
-    int timeDelay = 3;
+    int timeDelay = 10;
 
     int coordinates[3] = {0, 0, 0};
 
@@ -53,7 +53,7 @@ bool Servo_update()
 
         pwm.setPWM(Servo[0].ch, 0, SERVO_BASELINE + Servo[0].targetAngle * 2);
         pwm.setPWM(Servo[1].ch, 0, SERVO_BASELINE + Servo[1].targetAngle * 2);
-        pwm.setPWM(Servo[2].ch, 0, SERVO_BASELINE + Servo[2].targetAngle * 2);
+        // pwm.setPWM(Servo[2].ch, 0, SERVO_BASELINE + Servo[2].targetAngle * 2);
 
         delay(timeDelay);
     }
@@ -66,7 +66,7 @@ bool Servo_update()
 
         pwm.setPWM(Servo[0].ch, 0, SERVO_BASELINE + Servo[0].targetAngle * 2);
         pwm.setPWM(Servo[1].ch, 0, SERVO_BASELINE + Servo[1].targetAngle * 2);
-        pwm.setPWM(Servo[2].ch, 0, SERVO_BASELINE + Servo[2].targetAngle * 2);
+        // pwm.setPWM(Servo[2].ch, 0, SERVO_BASELINE + Servo[2].targetAngle * 2);
 
         delay(timeDelay);
     }

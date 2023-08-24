@@ -32,17 +32,4 @@ void calcLegServo(int coordinates[3], int angle, Servo_Struct &Servo_0, Servo_St
     v1 = constrain(angle_1, Servo_0.minAngle, Servo_0.maxAngle);
     v2 = constrain(angle_2, Servo_1.minAngle, Servo_1.maxAngle);
     v3 = constrain(angle_3, Servo_2.minAngle, Servo_2.maxAngle);
-
-    // Serial.println();
-    // Serial.println(angle_1);
-    // Serial.println(angle_2);
-    // Serial.println(angle_3);
-    //
-    // Serial.println();
-    // Serial.println(constrain(angle_1, Servo_0.minAngle, Servo_0.maxAngle));
-    // Serial.println(constrain(angle_2, Servo_1.minAngle, Servo_1.maxAngle));
-    // Serial.println(constrain(angle_3, Servo_2.minAngle, Servo_2.maxAngle));
-    //
-    // Serial.println();
-    // Serial.println();
 }
