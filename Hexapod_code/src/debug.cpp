@@ -4,7 +4,7 @@
 // ================================================================
 // ===                          debug                           ===
 // ================================================================
-#ifdef DEBUG
+#ifdef DEBUG_SERIAL
 
 void Debug_Serial_out()
 {
@@ -54,5 +54,27 @@ void Debug_delay()
         Serial.print(".");
         delay(500);
     }
+}
+#endif
+
+#ifdef DEBUG_LED
+void Debug_Led(const byte &error_code)
+{
+    for (int bitPosition = 0; bitPosition < 8; ++bitPosition)
+    {
+        // Use bitwise AND to check the value of the bit at the given position
+        if ((error_code & (1 << bitPosition)))
+        {
+            // Bit is 1
+            Led_update(bitPosition + 1, CRGB::Blue);
+        }
+        else
+        {
+            // Bit is 0
+            Led_update(bitPosition + 1, CRGB::Black);
+        }
+    }
+
+    FastLED.show();
 }
 #endif
