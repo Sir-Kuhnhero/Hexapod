@@ -1,6 +1,6 @@
 #include <Arduino.h>
 #include <Wire.h>
-#include <math.h>
+// #include <math.h>
 
 #pragma once // Include guards to prevent multiple inclusion
 
@@ -15,37 +15,6 @@
 // ================================================================
 // ===                          struct                          ===
 // ================================================================
-// ############
-// ### math ###
-// ############
-struct Vector3
-{
-    float x;
-    float y;
-    float z;
-
-    Vector3(float _x = 0.0f, float _y = 0.0f, float _z = 0.0f) : x(_x), y(_y), z(_z) {}
-};
-
-// ##############
-// ### output ###
-// ##############
-struct Servo_Struct
-{
-    int ch = 0;                        // channel on servo driver
-    int minAngle = 60, maxAngle = 120; // max and min angle with 90° being the center position
-    int targetAngle = 90;              // Servo angle from 0° to 180°
-    int angleOffset = 0;               // if the servos are not installed correctly ((0,0,0) position does not form right angle) an offset can be applied
-};
-
-struct Leg_Struct
-{
-    int minLED, maxLED;     // index of LEDs on leg from root
-    Servo_Struct Servo[3];  // servos for each leg (from root to tip)
-    bool mirrored;          // ik for mirrored legs is slightly different
-    int mountAngle;         // angle at which the leg is mounted (from center line forwared)
-    Vector3 targetEndpoint; // enpoint used for ik calculations
-};
 
 // ================================================================
 // ===                           main                           ===
@@ -55,25 +24,119 @@ extern int loopTime;
 // ================================================================
 // ===                           math                           ===
 // ================================================================
-#ifdef SERVO
 
-void calcLegServo(Leg_Struct &leg);
+class Vector3
+{
+public:
+    float x, y, z;
 
-#endif
+    Vector3(float _x = 0.0f, float _y = 0.0f, float _z = 0.0f);
+    Vector3 operator+(const Vector3 &other) const;
+    Vector3 operator-(const Vector3 &other) const;
+    Vector3 operator*(const double &scalar) const;
+    Vector3 operator*(const float &scalar) const;
+    Vector3 operator*(const int &scalar) const;
+    Vector3 &operator=(const Vector3 &other);
+    bool operator==(const Vector3 &other) const;
+    Vector3 rotate(const float &angle, const char &axis);
+    Vector3 normalized();
+    float magnitude() const;
+    static Vector3 Lerp(const Vector3 &start, const Vector3 &end, const float &t);
+    static Vector3 Normalize(Vector3 &vector);
+    static float Dot(const Vector3 &a, const Vector3 &b);
+    static float Angle(const Vector3 &from, const Vector3 &to);
+};
 
-Vector3 addVectors(const Vector3 &a, const Vector3 &b);
-Vector3 scaleVector(const Vector3 &v, float scaleFactor);
-float dotProduct(const Vector3 &a, const Vector3 &b);
-Vector3 interpolate(const Vector3 &start, const Vector3 &end, const float &t);
+class Vector2
+{
+public:
+    float x, y;
+
+    Vector2(float _x = 0.0f, float _y = 0.0f);
+    Vector2 operator+(const Vector2 &other) const;
+    Vector2 operator-(const Vector2 &other) const;
+    Vector2 operator*(const double &scalar) const;
+    Vector2 operator*(const float &scalar) const;
+    Vector2 operator*(const int &scalar) const;
+    Vector2 &operator=(const Vector2 &other);
+    bool operator==(const Vector2 &other) const;
+    Vector2 rotate(const float &angle, const char &axis);
+    Vector2 normalized() const;
+    float magnitude() const;
+    static Vector2 Lerp(const Vector2 &start, const Vector2 &end, const float &t);
+    static Vector2 Normalize(Vector2 &vector);
+    static float Dot(const Vector2 &a, const Vector2 &b);
+    static float Angle(const Vector2 &from, const Vector2 &to);
+};
+
+Vector2 projectPointToCircle(const float &radius, const Vector2 &point, const Vector2 &direction);
+bool almostEqual(const float &a, const float &b, const float &epsilon = 0.005);
+
+// Vector3 interpolate(const Vector3 &start, const Vector3 &end, const float &t);
+// Vector3 rotateVector(const Vector3 &point, const Vector3 &angles);
 
 // ================================================================
 // ===                           LED                            ===
 // ================================================================
 
+// ================================================================
+// ===                          output                          ===
+// ================================================================
+
+#ifdef SERVO
+
+#include <Adafruit_PWMServoDriver.h>
+
+#define SERVO_FREQ 50 // Analog servos run at ~50 Hz updates
+
+#define SERVO_MIN 100
+#define SERVO_MAX 450
+
+#define SERVO_BASELINE 100
+
+struct Servo_Struct
+{
+    int ch = 0;                        // channel on servo driver
+    int minAngle = 50, maxAngle = 130; // max and min angle with 90° being the center position
+    int targetAngle = 90;              // Servo angle from 0° to 180°
+    int angleOffset = 0;               // if the servos are not installed correctly ((0,0,0) position does not form right angle) an offset can be applied
+};
+
+struct Leg_Struct
+{
+    int minLED, maxLED;                    // index of LEDs on leg from root
+    Servo_Struct Servo[3];                 // servos for each leg (from root to tip)
+    bool mirrored;                         // ik for mirrored legs is slightly different
+    int mountAngle;                        // angle at which the leg is mounted (from center line forwared)
+    Vector3 targetEndpoint;                // enpoint used for ik calculations
+    Vector3 vectorBodyOrigionToLegOrigion; // !! currently not working !! vector between body origion and leg origion (root joint) with no body rotation
+    Vector3 vectorBodyOrigionToZeroPoint;  // !! currently not working !! vector between body origion and leg zero point origion (i.e where the leg at imput (0, 0, 0) will be)
+    const int distanceToBodyOrigion = 100;
+};
+
+extern Leg_Struct Leg[6];
+
+struct Body_Struct
+{
+    Vector3 positionOffset; // offset of body to normal center positon i.e. the center between all legs in their zero position
+};
+
+byte Servo_init();
+void Servo_update(const Servo_Struct &servo);
+void Servo_update(const int &servoCH, const int &angle);
+
+void Leg_update(const int &legID, const Vector3 &endpoint);
+
+#endif
+
 #ifdef WS2812B_LED
 #include <FastLED.h>
 
 #define NUM_LEDS 271
+
+byte Led_init();
+void Led_update(const int &LedID, const CRGB &color);
+void LED_leg_animation(const int &legID, const int &aminationID, const float &level);
 
 #pragma region ledNotes
 // 0:       Eye center
@@ -114,38 +177,6 @@ Vector3 interpolate(const Vector3 &start, const Vector3 &end, const float &t);
 
 #define DATA_PIN 3
 #endif
-
-// ================================================================
-// ===                          output                          ===
-// ================================================================
-
-#ifdef SERVO
-
-#include <Adafruit_PWMServoDriver.h>
-
-#define SERVO_FREQ 50 // Analog servos run at ~50 Hz updates
-
-#define SERVO_MIN 100
-#define SERVO_MAX 450
-
-#define SERVO_BASELINE 100
-
-extern Leg_Struct Leg[6];
-
-byte Servo_init();
-void Servo_update(const Servo_Struct &servo);
-void Servo_update(const int &servoCH, const int &angle);
-
-void Leg_update(const int &legID, const Vector3 &endpoint);
-
-#endif
-
-#ifdef WS2812B_LED
-
-byte Led_init();
-void Led_update(const int &LedID, const CRGB &color);
-
-#endif
 // ================================================================
 // ===                          debug                           ===
 // ================================================================
@@ -166,7 +197,8 @@ void Debug_delay();
 
 #ifdef DEBUG_LED
 
-void Debug_Led(const byte &error_code);
+void Debug_Led_8bit(const uint8_t &error_code);
+void Debug_Led_16bit(const uint16_t &error_code);
 
 #endif
 // return 0b00000000;
@@ -174,3 +206,18 @@ void Debug_Led(const byte &error_code);
 // byte returnVal;
 //    returnVal = single_servo_update(leg.Servo[0]);
 // if (returnVal != 0b00000000) Debug_Led(returnVal);
+
+// Debug_Led(uint16_t(Leg[0].vectorBodyOrigionToLegOrigion.x * 100));
+
+// ================================================================
+// ===                            IK                            ===
+// ================================================================
+
+#ifdef SERVO
+#define LENGTH_TROCHANTER 50
+#define LENGTH_FEMUR 80
+#define LENGTH_TIBIA 120
+
+void calcLegServo(Leg_Struct &leg, Body_Struct &body);
+
+#endif

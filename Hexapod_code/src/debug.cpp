@@ -58,7 +58,9 @@ void Debug_delay()
 #endif
 
 #ifdef DEBUG_LED
-void Debug_Led(const byte &error_code)
+
+// using the middle eye ring to represent a 8bit error code
+void Debug_Led_8bit(const uint8_t &error_code)
 {
     for (int bitPosition = 0; bitPosition < 8; ++bitPosition)
     {
@@ -72,6 +74,27 @@ void Debug_Led(const byte &error_code)
         {
             // Bit is 0
             Led_update(bitPosition + 1, CRGB::Black);
+        }
+    }
+
+    FastLED.show();
+}
+
+// using the outer eye ring to represent a 16bit error code (good for numbers that might be really large)
+void Debug_Led_16bit(const uint16_t &error_code)
+{
+    for (int bitPosition = 0; bitPosition < 16; ++bitPosition)
+    {
+        // Use bitwise AND to check the value of the bit at the given position
+        if ((error_code & (1 << bitPosition)))
+        {
+            // Bit is 1
+            Led_update(bitPosition + 9, CRGB::Blue);
+        }
+        else
+        {
+            // Bit is 0
+            Led_update(bitPosition + 9, CRGB::Black);
         }
     }
 
