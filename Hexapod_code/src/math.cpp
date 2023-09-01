@@ -4,25 +4,6 @@
 // ================================================================
 // ===                           math                           ===
 // ================================================================
-/* no longer needed thanks to operator overload
-Vector3 addVectors(const Vector3 &a, const Vector3 &b)
-{
-    Vector3 result;
-    result.x = a.x + b.x;
-    result.y = a.y + b.y;
-    result.z = a.z + b.z;
-    return result;
-}
-
-Vector3 scaleVector(const Vector3 &v, float scaleFactor)
-{
-    Vector3 result;
-    result.x = v.x * scaleFactor;
-    result.y = v.y * scaleFactor;
-    result.z = v.z * scaleFactor;
-    return result;
-}
-*/
 #pragma region Vector3
 
 Vector3::Vector3(float _x, float _y, float _z) : x(_x), y(_y), z(_z) {}
@@ -131,6 +112,14 @@ float Vector3::magnitude() const
     return sqrt(x * x + y * y + z * z);
 }
 
+// returns the inverse of the vector (Read Only)
+Vector3 Vector3::inverse() const
+{
+    Vector3 output(x * -1, y * -1, z * -1);
+
+    return output;
+}
+
 // Linearly interpolates between two points.
 Vector3 Vector3::Lerp(const Vector3 &start, const Vector3 &end, const float &t)
 {
@@ -170,6 +159,15 @@ float Angle(const Vector3 &from, const Vector3 &to)
 
     // Calculate the angle in radians adn convert to degree
     return acos(cosAngle) * RAD_TO_DEG;
+}
+
+// clamps the length of a vector but keeps the direction
+Vector3 Vector3::ClampMagnitude(Vector3 &vector, const float &magnitude)
+{
+    if (vector.magnitude() > magnitude)
+        return Vector3::Normalize(vector) * magnitude;
+
+    return vector;
 }
 #pragma endregion
 
@@ -255,10 +253,18 @@ Vector2 Vector2::normalized() const
     return output;
 }
 
-// returns the length of a vector (Read Only)
+// returns the length of the vector (Read Only)
 float Vector2::magnitude() const
 {
     return sqrt(x * x + y * y);
+}
+
+// returns the inverse of the vector (Read Only)
+Vector2 Vector2::inverse() const
+{
+    Vector2 output(x * -1, y * -1);
+
+    return output;
 }
 
 // Linearly interpolates between two points.
@@ -298,43 +304,19 @@ float Vector2::Angle(const Vector2 &from, const Vector2 &to)
     // converts randian to degree
     return angleDiff * RAD_TO_DEG;
 }
-#pragma endregion
 
-#pragma endregion
-
-// returns a point on a circle based on a point inside the circle that is projected by a vector
-Vector2 projectPointToCircle(const float &radius, const Vector2 &point, const Vector2 &direction)
+// clamps the length of a vector but keeps the direction
+Vector2 Vector2::ClampMagnitude(Vector2 &vector, const float &magnitude)
 {
-    // no direction for projection -> no calculation
-    if (direction.magnitude() == 0)
-        return point;
-    // start bein (0, 0) or haveing the same direction as directionInput makes the calculation very simple
-    if (point.magnitude() == 0 || point.normalized() == direction.normalized() || point.normalized() * -1 == direction.normalized())
-        return direction.normalized() * radius;
+    if (vector.magnitude() > magnitude)
+        return Vector2::Normalize(vector) * magnitude;
 
-    float lengthC = point.magnitude();
-
-    // calculate angle beta on unequal triangle
-    float angleBeta = 180 - Vector2::Angle(direction, point);
-
-    // calculate missing Angles
-    float sinGamma = (lengthC * sin(angleBeta * DEG_TO_RAD)) / radius;
-
-    float angleGamma = asin(sinGamma) * RAD_TO_DEG;
-    float angleAlpha = 180 - angleBeta - angleGamma;
-
-    float projectionLength = (radius * sin(angleAlpha * DEG_TO_RAD)) / sin(angleBeta * DEG_TO_RAD);
-
-    Vector2 output = point + direction.normalized() * projectionLength;
-    // output.y *= -1; // multiply by -1 to keep the coordinate system (font , left, up being position (from view of robot))
-
-    // swapping values to keep coordinate system consistent (font , left, up being position (from view of robot))
-    // float tempX = output.x;
-    // output.x = output.y;
-    // output.y = tempX;
-
-    return output;
+    return vector;
 }
+
+#pragma endregion
+
+#pragma endregion
 
 // due to floating-point precision two floats might not be exactly the same
 bool almostEqual(const float &a, const float &b, const float &epsilon)

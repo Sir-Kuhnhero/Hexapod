@@ -10,7 +10,7 @@ const Vector3 legZeroOffset(130, 0, -120); // local offset from leg origion to s
 
 Vector3 calcVectorlegOrigionToTip(Leg_Struct &leg, Body_Struct &body);
 
-void calcLegServo(Leg_Struct &leg, Body_Struct &body)
+void calcLegServoAngles(Leg_Struct &leg, Body_Struct &body)
 {
 
     // ########################################################

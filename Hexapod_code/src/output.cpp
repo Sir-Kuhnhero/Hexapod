@@ -180,15 +180,64 @@ void Servo_update(const int &servoCH, const int &angle)
         servoDriver_1.setPWM(servoCH - 16, 0, SERVO_BASELINE + angle * 2);
 }
 
-void Leg_update(const int &legID, const Vector3 &endpoint)
+// used to test wether min values are correct
+void Servo_moveAllToMinValue()
 {
-    Leg[legID].targetEndpoint = endpoint;
+    // loop through each leg
+    for (size_t i = 0; i < 6; i++)
+    {
+        // loop through each servo in leg
+        for (size_t o = 0; o < 3; o++)
+        {
+            int oldTargetAngle = Leg[i].Servo[o].targetAngle;
 
-    calcLegServo(Leg[legID], Body);
+            Leg[i].Servo[o].targetAngle = Leg[0].Servo[o].minAngle - abs(Leg[0].Servo[o].angleOffset);
+
+            Servo_update(Leg[i].Servo[o]);
+
+            Leg[i].Servo[o].targetAngle = oldTargetAngle;
+        }
+    }
+}
+
+// used to test wether max values are correct
+void Servo_moveAllToMaxValue()
+{
+    // loop through each leg
+    for (size_t i = 0; i < 6; i++)
+    {
+        // loop through each servo in leg
+        for (size_t o = 0; o < 3; o++)
+        {
+            int oldTargetAngle = Leg[i].Servo[o].targetAngle;
+
+            Leg[i].Servo[o].targetAngle = Leg[0].Servo[o].maxAngle + abs(Leg[0].Servo[o].angleOffset);
+
+            Servo_update(Leg[i].Servo[o]);
+
+            Leg[i].Servo[o].targetAngle = oldTargetAngle;
+        }
+    }
+}
+
+void Leg_update(const int &legID)
+{
+    calcLegServoAngles(Leg[legID], Body);
 
     Servo_update(Leg[legID].Servo[0]);
     Servo_update(Leg[legID].Servo[1]);
     Servo_update(Leg[legID].Servo[2]);
+}
+
+// update every output as needed to reflect any changes
+void Output_update()
+{
+    Leg_update(0);
+    Leg_update(1);
+    Leg_update(2);
+    Leg_update(3);
+    Leg_update(4);
+    Leg_update(5);
 }
 
 #endif

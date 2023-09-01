@@ -1,6 +1,5 @@
 #include <Arduino.h>
 #include <Wire.h>
-// #include <math.h>
 
 #pragma once // Include guards to prevent multiple inclusion
 
@@ -13,13 +12,15 @@
 #define DEBUG_LED
 
 // ================================================================
-// ===                          struct                          ===
-// ================================================================
-
-// ================================================================
 // ===                           main                           ===
 // ================================================================
 extern int loopTime;
+
+// time refferences to see how long parts of the code take
+extern int long time1;
+extern int long time1;
+extern int long time2;
+extern int long time3;
 
 // ================================================================
 // ===                           math                           ===
@@ -41,10 +42,12 @@ public:
     Vector3 rotate(const float &angle, const char &axis);
     Vector3 normalized();
     float magnitude() const;
+    Vector3 inverse() const;
     static Vector3 Lerp(const Vector3 &start, const Vector3 &end, const float &t);
     static Vector3 Normalize(Vector3 &vector);
     static float Dot(const Vector3 &a, const Vector3 &b);
     static float Angle(const Vector3 &from, const Vector3 &to);
+    static Vector3 ClampMagnitude(Vector3 &vector, const float &magnitude);
 };
 
 class Vector2
@@ -63,21 +66,15 @@ public:
     Vector2 rotate(const float &angle, const char &axis);
     Vector2 normalized() const;
     float magnitude() const;
+    Vector2 inverse() const;
     static Vector2 Lerp(const Vector2 &start, const Vector2 &end, const float &t);
     static Vector2 Normalize(Vector2 &vector);
     static float Dot(const Vector2 &a, const Vector2 &b);
     static float Angle(const Vector2 &from, const Vector2 &to);
+    static Vector2 ClampMagnitude(Vector2 &vector, const float &magnitude);
 };
 
-Vector2 projectPointToCircle(const float &radius, const Vector2 &point, const Vector2 &direction);
 bool almostEqual(const float &a, const float &b, const float &epsilon = 0.005);
-
-// Vector3 interpolate(const Vector3 &start, const Vector3 &end, const float &t);
-// Vector3 rotateVector(const Vector3 &point, const Vector3 &angles);
-
-// ================================================================
-// ===                           LED                            ===
-// ================================================================
 
 // ================================================================
 // ===                          output                          ===
@@ -104,14 +101,16 @@ struct Servo_Struct
 
 struct Leg_Struct
 {
-    int minLED, maxLED;                    // index of LEDs on leg from root
-    Servo_Struct Servo[3];                 // servos for each leg (from root to tip)
-    bool mirrored;                         // ik for mirrored legs is slightly different
-    int mountAngle;                        // angle at which the leg is mounted (from center line forwared)
-    Vector3 targetEndpoint;                // enpoint used for ik calculations
+    int minLED, maxLED;     // index of LEDs on leg from root
+    Servo_Struct Servo[3];  // servos for each leg (from root to tip)
+    bool mirrored;          // ik for mirrored legs is slightly different
+    int mountAngle;         // angle at which the leg is mounted (from center line forwared)
+    Vector3 targetEndpoint; // enpoint the leg is trying to reach (used for IK calculations)
+    // Vector3 currentEnpoint;                // enpoint used for ik calculations
     Vector3 vectorBodyOrigionToLegOrigion; // !! currently not working !! vector between body origion and leg origion (root joint) with no body rotation
     Vector3 vectorBodyOrigionToZeroPoint;  // !! currently not working !! vector between body origion and leg zero point origion (i.e where the leg at imput (0, 0, 0) will be)
-    const int distanceToBodyOrigion = 100;
+    const int distanceToBodyOrigion = 100; // !! currently not working !! distance of leg origion to body origion
+    bool lifted = false;                   // if the leg is lifted for taking a step -> set to true
 };
 
 extern Leg_Struct Leg[6];
@@ -125,14 +124,20 @@ byte Servo_init();
 void Servo_update(const Servo_Struct &servo);
 void Servo_update(const int &servoCH, const int &angle);
 
+void Servo_moveAllToMinValue();
+void Servo_moveAllToMaxValue();
+
 void Leg_update(const int &legID, const Vector3 &endpoint);
 
 #endif
 
 #ifdef WS2812B_LED
+
 #include <FastLED.h>
 
 #define NUM_LEDS 271
+
+#define DATA_PIN 3
 
 byte Led_init();
 void Led_update(const int &LedID, const CRGB &color);
@@ -175,7 +180,6 @@ void LED_leg_animation(const int &legID, const int &aminationID, const float &le
 // 250-270
 #pragma endregion
 
-#define DATA_PIN 3
 #endif
 // ================================================================
 // ===                          debug                           ===
@@ -214,10 +218,28 @@ void Debug_Led_16bit(const uint16_t &error_code);
 // ================================================================
 
 #ifdef SERVO
+
 #define LENGTH_TROCHANTER 50
 #define LENGTH_FEMUR 80
 #define LENGTH_TIBIA 120
 
-void calcLegServo(Leg_Struct &leg, Body_Struct &body);
+void calcLegServoAngles(Leg_Struct &leg, Body_Struct &body);
+
+#endif
+
+// ================================================================
+// ===                         walkGait                         ===
+// ================================================================
+
+#ifdef SERVO
+
+extern int legLiftDistance = 30; // how high each step of the ground is
+extern int legLiftIncline = 2;   // how steep the incline of leg ascent when lifting is (when moving forward)
+
+void LegStartup();
+
+Vector2 projectPointToCircle(const float &radius, const Vector2 &point, Vector2 direction);
+
+void walkCycle(Vector2 direction, const int &height, const int &stepRadius);
 
 #endif
