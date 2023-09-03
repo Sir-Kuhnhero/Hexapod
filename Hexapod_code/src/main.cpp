@@ -3,8 +3,6 @@
 
 int loopTime;
 
-void testLegMovement();
-
 void setup()
 {
 #ifdef WS2812B_LED // initialitze LEDs
@@ -50,13 +48,15 @@ void loop()
 {
   int long curTime = millis();
 
-  Vector2 direction(50, 0); // in what direction and how fast is the hexapod walking
-  int height = 40;          // how heigh of the groung is the hexapod walking
+  Vector2 direction(0, 50); // in what direction and how fast is the hexapod walking
+  int height = 30;          // how heigh of the groung is the hexapod walking
   int stepRadius = 100;     // how long are the steps taken
 
   walkCycle(direction, height, stepRadius);
 
   Output_update();
+
+  delay(10);
 
   loopTime = millis() - curTime;
 }

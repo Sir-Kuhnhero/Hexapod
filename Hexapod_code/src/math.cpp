@@ -169,6 +169,33 @@ Vector3 Vector3::ClampMagnitude(Vector3 &vector, const float &magnitude)
 
     return vector;
 }
+
+// clams the value of a parameter (x, y, or z) of a vector but keeps direction the same (scales to compensate)
+Vector3 Vector3::ClampByParameter(Vector3 &vector, const char &axis, const float &magnitude)
+{
+    float newLength;
+
+    switch (axis)
+    {
+    case 'x':
+        newLength = (vector.x / magnitude) * vector.magnitude();
+        Vector3::ClampMagnitude(vector, newLength);
+        break;
+    case 'y':
+        newLength = (vector.y / magnitude) * vector.magnitude();
+        Vector3::ClampMagnitude(vector, newLength);
+        break;
+    case 'z':
+        newLength = (vector.z / magnitude) * vector.magnitude();
+        Vector3::ClampMagnitude(vector, newLength);
+        break;
+    default:
+        break;
+    }
+
+    return vector;
+}
+
 #pragma endregion
 
 #pragma endregion
@@ -310,6 +337,28 @@ Vector2 Vector2::ClampMagnitude(Vector2 &vector, const float &magnitude)
 {
     if (vector.magnitude() > magnitude)
         return Vector2::Normalize(vector) * magnitude;
+
+    return vector;
+}
+
+// clams the value of a parameter (x or y) of a vector but keeps direction the same (scales to compensate)
+Vector2 Vector2::ClampByParameter(Vector2 &vector, const char &axis, const float &magnitude)
+{
+    float newLength;
+
+    switch (axis)
+    {
+    case 'x':
+        newLength = (vector.x / magnitude) * vector.magnitude();
+        Vector2::ClampMagnitude(vector, newLength);
+        break;
+    case 'y':
+        newLength = (vector.y / magnitude) * vector.magnitude();
+        Vector2::ClampMagnitude(vector, newLength);
+        break;
+    default:
+        break;
+    }
 
     return vector;
 }

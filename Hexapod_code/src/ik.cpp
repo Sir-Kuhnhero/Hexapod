@@ -40,7 +40,6 @@ void calcLegServoAngles(Leg_Struct &leg, Body_Struct &body)
     float servo2TipDistance = sqrt(pow(noTrochanter, 2) + pow(localCoordinates.z, 2));                      // distance between servo 2 and the tip
 
     float angle_0 = atan2(localCoordinates.y, localCoordinates.x) * RAD_TO_DEG + 90;
-    // float angle_0 = asin(localCoordinates.y / (noTrochanter + LENGTH_TROCHANTER)) * RAD_TO_DEG + 90;
 
     float angleRightSideTriangle = atan2(localCoordinates.z, noTrochanter) * RAD_TO_DEG;
     float angleUnequalTriangle = acos((pow(LENGTH_TIBIA, 2) - pow(servo2TipDistance, 2) - pow(LENGTH_FEMUR, 2)) / (-2 * servo2TipDistance * LENGTH_FEMUR)) * RAD_TO_DEG;
@@ -50,7 +49,7 @@ void calcLegServoAngles(Leg_Struct &leg, Body_Struct &body)
     int angle_1 = 0;
     int angle_2 = 0;
 
-    if (leg.mirrored) // if the leg id mirrored the servos are installed slightly different
+    if (leg.mirrored) // if the leg is mirrored the servos are installed slightly different
     {
         angle_1 = int(angleRightSideTriangle + angleUnequalTriangle) * -1 + 90;
         angle_2 = int(angleUnequalTriangle_2);

@@ -48,6 +48,7 @@ public:
     static float Dot(const Vector3 &a, const Vector3 &b);
     static float Angle(const Vector3 &from, const Vector3 &to);
     static Vector3 ClampMagnitude(Vector3 &vector, const float &magnitude);
+    static Vector3 ClampByParameter(Vector3 &vector, const char &axis, const float &magnitude);
 };
 
 class Vector2
@@ -72,6 +73,7 @@ public:
     static float Dot(const Vector2 &a, const Vector2 &b);
     static float Angle(const Vector2 &from, const Vector2 &to);
     static Vector2 ClampMagnitude(Vector2 &vector, const float &magnitude);
+    static Vector2 ClampByParameter(Vector2 &vector, const char &axis, const float &magnitude);
 };
 
 bool almostEqual(const float &a, const float &b, const float &epsilon = 0.005);
@@ -127,7 +129,8 @@ void Servo_update(const int &servoCH, const int &angle);
 void Servo_moveAllToMinValue();
 void Servo_moveAllToMaxValue();
 
-void Leg_update(const int &legID, const Vector3 &endpoint);
+void Leg_update(const int &legID);
+void Output_update();
 
 #endif
 
@@ -233,8 +236,8 @@ void calcLegServoAngles(Leg_Struct &leg, Body_Struct &body);
 
 #ifdef SERVO
 
-extern int legLiftDistance = 30; // how high each step of the ground is
-extern int legLiftIncline = 2;   // how steep the incline of leg ascent when lifting is (when moving forward)
+extern int legLiftDistance;  // how high each step of the ground is
+extern float legLiftIncline; // how steep the incline of leg ascent when lifting is (when moving forward)
 
 void LegStartup();
 

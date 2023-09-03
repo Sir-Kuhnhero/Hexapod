@@ -162,13 +162,12 @@ byte Servo_init()
 
 void Servo_update(const Servo_Struct &servo)
 {
-    int angle = servo.targetAngle + servo.angleOffset;
-    angle = constrain(angle, servo.minAngle, servo.maxAngle);
+    int angle = constrain(servo.targetAngle, servo.minAngle, servo.maxAngle);
     // check which servo driver to use
     if (servo.ch < 16)
-        servoDriver_0.setPWM(servo.ch, 0, SERVO_BASELINE + angle * 2);
+        servoDriver_0.setPWM(servo.ch, 0, SERVO_BASELINE + (angle + servo.angleOffset) * 2);
     else if (servo.ch < 32)
-        servoDriver_1.setPWM(servo.ch - 16, 0, SERVO_BASELINE + angle * 2);
+        servoDriver_1.setPWM(servo.ch - 16, 0, SERVO_BASELINE + (angle + servo.angleOffset) * 2);
 }
 
 void Servo_update(const int &servoCH, const int &angle)

@@ -5,8 +5,8 @@
 // ===                         walkGait                         ===
 // ================================================================
 
-int legLiftDistance;
-int legLiftIncline;
+int legLiftDistance = 30;
+float legLiftIncline = 2;
 
 // move Legs to start and stand up
 void LegStartup()
@@ -151,9 +151,10 @@ void walkCycle(Vector2 direction, const int &height, const int &stepRadius)
     // scale direction vector by passed time (mm per second)
     direction = direction * (float(loopTime) / 1000.0f);
 
-    // #########################################
-    // ### set lifted leg and push leg group ###
-    // #########################################
+    // ###################################
+    // ### set lifted & push leg group ###
+    // ###################################
+
     // set ID for lifted group and push group. Three legs work in sync so Leg[0] and Leg[1] can be used for each
     if (Leg[0].lifted && !Leg[1].lifted) // group 1 is lifted | group 2 is not lifted
     {
@@ -192,13 +193,15 @@ void walkCycle(Vector2 direction, const int &height, const int &stepRadius)
             Leg[0].lifted = false;
             Leg[1].lifted = true;
         }
-
+        // temp for testing
+        Leg[0].lifted = false;
+        Leg[1].lifted = true;
         return;
     }
     else // !! both legs are lifted !!
     {
-        Debug_Led_8bit(0b01010101);
-        delay(1000);
+        Debug_Led_8bit(0b00000011);
+        delay(5000);
 
         Leg[0].lifted = false;
         Leg[1].lifted = false;
@@ -210,86 +213,120 @@ void walkCycle(Vector2 direction, const int &height, const int &stepRadius)
     // ### calc new target point on outer circle ###
     // #############################################
 
-    Vector2 curPointLiftedGroup(Leg[liftedLegID].targetEndpoint.x, Leg[liftedLegID].targetEndpoint.y);
-    Vector2 curPointPushGroup(Leg[pushLegID].targetEndpoint.x, Leg[pushLegID].targetEndpoint.y);
+    Vector2 curPointLiftedGroup_XYPlane(Leg[liftedLegID].targetEndpoint.x, Leg[liftedLegID].targetEndpoint.y);
+    Vector2 curPointPushGroup_XYPlane(Leg[pushLegID].targetEndpoint.x, Leg[pushLegID].targetEndpoint.y);
 
-    Vector2 targetCircleLiftedGroup = projectPointToCircle(stepRadius, curPointLiftedGroup, direction);
-    Vector2 targetCirclePushGroup = projectPointToCircle(stepRadius, curPointPushGroup, direction.inverse());
+    Vector3 curPointLiftedGroup = Leg[liftedLegID].targetEndpoint;
+    Vector3 curPointPushGroup = Leg[pushLegID].targetEndpoint;
 
-    //
-    //
-    //
-    //
-    //
-    //
-    //
-    //
-    // ###############################################
-    // ### calc subtarget based on target valocity ###
-    // ###############################################
-    Vector3 curPointToCirleTargetLifted(targetCircleLiftedGroup.x - curPointLiftedGroup.x, targetCircleLiftedGroup.y - curPointLiftedGroup.y, 0);
-    Vector3 curPointToCirleTargetPush(targetCirclePushGroup.x - curPointPushGroup.x, targetCirclePushGroup.y - curPointPushGroup.y, 0);
+    Vector2 targetCircleLiftedGroup_XYPlane = projectPointToCircle(stepRadius, curPointLiftedGroup_XYPlane, direction);
+    Vector2 targetCirclePushGroup_XYPlane = projectPointToCircle(stepRadius, curPointPushGroup_XYPlane, direction.inverse());
+
+    Vector3 targetCircleLiftedGroup(targetCircleLiftedGroup_XYPlane.x, targetCircleLiftedGroup_XYPlane.y, height);
+    Vector3 targetCirclePushGroup(targetCirclePushGroup_XYPlane.x, targetCirclePushGroup_XYPlane.y, height);
+
+    // ######################################
+    // ### calc subTarget for lifted legs ###
+    // ######################################
+
+    Vector3 curPointCirleTargetLifted(targetCircleLiftedGroup.x - curPointLiftedGroup.x, targetCircleLiftedGroup.y - curPointLiftedGroup.y, targetCircleLiftedGroup.z - curPointLiftedGroup.z);
+    Vector3 curPointCirleTargetPush(targetCirclePushGroup.x - curPointPushGroup.x, targetCirclePushGroup.y - curPointPushGroup.y, targetCirclePushGroup.z - curPointPushGroup.z);
 
     // calc time to target for push legs (in seconds)
-    float timeToTargetPush = (curPointToCirleTargetPush).magnitude() / direction.magnitude();
+    float timeToTargetPush = (curPointCirleTargetPush).magnitude() / direction.magnitude();
 
-    // !! not correct as it does not add the curPoint ot point in circle !! calc subPoints for lifted legs
-    Vector3 subTarget[2];
-    subTarget[0] = curPointToCirleTargetLifted.normalized() * (legLiftDistance / legLiftIncline);
-    subTarget[0].z += legLiftDistance;
+    // calc subTargets for lifted legs
+    float heightDifferenceCurPointLegLiftDistance = targetCircleLiftedGroup.z + legLiftDistance - curPointLiftedGroup.z;
+    float distanceCurPointSubTarget1_XYPlane = fabs(heightDifferenceCurPointLegLiftDistance) / legLiftIncline;
+    float distanceTargetCircleSubTarget2_XYPlane = legLiftDistance / legLiftIncline;
 
-    subTarget[1] = curPointToCirleTargetLifted.normalized().inverse() * (legLiftDistance / legLiftIncline);
-    subTarget[1].z += legLiftDistance;
+    Vector2 curPointCirleTargetLifted_XYPlane(curPointCirleTargetLifted.x, curPointCirleTargetLifted.y);
+    float distanceCurPointTargetCircle_XYPlane = curPointCirleTargetLifted_XYPlane.magnitude();
 
-    // check wether curPoint to subTarget1 & subTarget2 to targetCircle intersect -> if true set this intersection point as subtarget and overwrite the other two
+    // if leg is already passed first subTarget or the two subTargets would interfere only one will be calculated and stepHeoght might differe from desired ledLiftDistance
+    int numbOfSubTargets = 0; // number of subtargets to be calculated for path of lifted leg
+    float stepHeight = legLiftDistance;
 
-    // calc speed needed to reach the target at the same time as push legs
-    // (possibly add an offset to give the currently lifted legs (new push legs) some time on the ground before the old legs are lifted)
-
-    // if speed is over max speed slow push legs down as needed
-
-    // calculate sub target
-
-    Vector3 targetGroup1(targetCircleLiftedGroup.x, targetCircleLiftedGroup.y, 0);
-    Vector3 targetGroup2(targetCirclePushGroup.x, targetCirclePushGroup.y, 0);
-
-    // interpolate based on target speed
-    Vector3 nextTargetGroup1 = (targetGroup1 - Leg[0].targetEndpoint).normalized() * direction.magnitude() + Leg[0].targetEndpoint;
-    Vector3 nextTargetGroup2 = (targetGroup2 - Leg[1].targetEndpoint).normalized() * direction.magnitude() + Leg[1].targetEndpoint;
-
-    // clamp radius to make shure the leg never leaves the circle for projections
-    Vector3 nextTargetGroup1Clamped = Vector3::ClampMagnitude(nextTargetGroup1, stepRadius);
-    Vector3 nextTargetGroup2Clamped = Vector3::ClampMagnitude(nextTargetGroup2, stepRadius);
-
-    // set target height for legs groups
-    nextTargetGroup1Clamped.z = height + (Leg[0].lifted ? legLiftDistance : height);
-    nextTargetGroup2Clamped.z = height + (Leg[1].lifted ? legLiftDistance : height);
-
-    // switch lifted leg group on target reach
-    bool group1ReachedTarget = (nextTargetGroup1Clamped - Leg[0].targetEndpoint).magnitude() < direction.magnitude() / 2;
-    bool group2ReachedTarget = (nextTargetGroup2Clamped - Leg[1].targetEndpoint).magnitude() < direction.magnitude() / 2;
-
-    if (group1ReachedTarget, group2ReachedTarget) // group 1 & 2 has reached its target
+    // true if two subTargets are needed
+    if (distanceCurPointSubTarget1_XYPlane + distanceTargetCircleSubTarget2_XYPlane < distanceCurPointTargetCircle_XYPlane && !almostEqual(fabs(heightDifferenceCurPointLegLiftDistance), 0, 2))
     {
-        Leg[0].lifted = !Leg[0].lifted;
-        Leg[1].lifted = !Leg[1].lifted;
+        numbOfSubTargets = 2;
+    }
+    else if (heightDifferenceCurPointLegLiftDistance < 2)
+    {
+        numbOfSubTargets = 1;
+
+        float stepHeightBy = legLiftDistance - ((distanceCurPointSubTarget1_XYPlane + distanceTargetCircleSubTarget2_XYPlane - distanceCurPointTargetCircle_XYPlane) / 2) * legLiftIncline;
+    }
+    else
+    {
+        numbOfSubTargets = 1;
+        stepHeight = distanceCurPointTargetCircle_XYPlane * legLiftIncline;
     }
 
-    //
-    //
-    //
-    //
-    //
-    //
+    // calc path to and between subTargets
+    Vector3 section[3]; // path of lifted legs are seperated into three sections (lift, travel and lower). These add up to the path
+
+    Vector3 directionIn3D(direction.x, direction.y, 0);
+
+    section[2] = directionIn3D.normalized() * (stepHeight / legLiftIncline);
+    section[2].z = stepHeight * -1;
+
+    if (numbOfSubTargets == 2)
+    {
+        section[0] = directionIn3D.normalized() * (heightDifferenceCurPointLegLiftDistance / legLiftIncline);
+        section[0].z = heightDifferenceCurPointLegLiftDistance;
+    }
+
+    section[1] = (targetCircleLiftedGroup - section[2]) - (curPointLiftedGroup + section[0]);
+
+    // calc speed needed to reach the target at the same time as push legs
+    float speedLifted = (section[0].magnitude() + section[1].magnitude() + section[2].magnitude()) / timeToTargetPush;
+    // (possibly add an offset to give the currently lifted legs (new push legs) some time on the ground before the old legs are lifted)
+
+    // !! not implemented !! if speed is over max speed slow push legs down as needed
+    float speedPush = direction.magnitude();
+
+    // #################################################
+    // ### interpolate to next target based on speed ###
+    // #################################################
+
+    // !! needs change to anticipate future movement and smooth corners
+    float interpolationSection[3]; // how much each section is interpolated (0 - 1) 0 means section[i] * 0
+
+    // if we need to interpolate more that a single section allowes overflow the rest to the next section
+    interpolationSection[0] = constrain(speedLifted, 0, section[0].magnitude());
+    interpolationSection[1] = constrain(speedLifted - interpolationSection[0], 0, section[1].magnitude());
+    interpolationSection[2] = constrain(speedLifted - interpolationSection[0] - interpolationSection[1], 0, section[2].magnitude());
+
+    Vector3 nextTargetLifted = section[0].normalized() * interpolationSection[0] + section[1].normalized() * interpolationSection[1] + section[2].normalized() * interpolationSection[2] + curPointLiftedGroup;
+
+    Vector3 nextTargetPush = (curPointCirleTargetPush).normalized() * speedPush + curPointPushGroup;
+
+    // clamp radius to make shure the leg never leaves the circle for projections
+    Vector3 nextTargetLiftedClamped = Vector3::ClampMagnitude(nextTargetLifted, stepRadius * 2);
+    Vector3 nextTargetPushClamped = Vector3::ClampMagnitude(nextTargetPush, stepRadius);
+
+    // switch lifted leg group on target reach
+    bool liftedReachedTarget = (nextTargetLiftedClamped - curPointLiftedGroup).magnitude() < speedLifted / 2;
+    bool pushReachedTarget = (nextTargetPushClamped - curPointPushGroup).magnitude() < speedPush / 2;
+
+    if (liftedReachedTarget, pushReachedTarget) // lifted and push has reached its target and now have to switch
+    {
+        Leg[0].lifted = !Leg[0].lifted;
+        Leg[1].lifted = !Leg[0].lifted;
+    }
+
     // #############################
     // ### set calculated values ###
     // #############################
-    // three legs move in together
-    Leg[0].targetEndpoint = nextTargetGroup1Clamped;
-    Leg[2].targetEndpoint = nextTargetGroup1Clamped;
-    Leg[4].targetEndpoint = nextTargetGroup1Clamped;
 
-    Leg[1].targetEndpoint = nextTargetGroup2Clamped;
-    Leg[3].targetEndpoint = nextTargetGroup2Clamped;
-    Leg[5].targetEndpoint = nextTargetGroup2Clamped;
+    // three legs move in together
+    Leg[liftedLegID].targetEndpoint = nextTargetLiftedClamped;
+    Leg[liftedLegID + 2].targetEndpoint = nextTargetLiftedClamped;
+    Leg[liftedLegID + 4].targetEndpoint = nextTargetLiftedClamped;
+
+    Leg[pushLegID].targetEndpoint = nextTargetPushClamped;
+    Leg[pushLegID + 2].targetEndpoint = nextTargetPushClamped;
+    Leg[pushLegID + 4].targetEndpoint = nextTargetPushClamped;
 }
