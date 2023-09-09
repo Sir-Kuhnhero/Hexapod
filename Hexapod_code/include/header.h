@@ -1,7 +1,6 @@
 #include <Arduino.h>
 #include <Wire.h>
-
-#pragma once // Include guards to prevent multiple inclusion
+#include <vector> // used for arrays with changing length
 
 #define WS2812B_LED
 
@@ -9,6 +8,7 @@
 
 #define DEBUG
 // #define DEBUG_SERIAL
+#define DEBUG_ARDUINO
 #define DEBUG_LED
 
 // ================================================================
@@ -34,21 +34,31 @@ public:
     Vector3(float _x = 0.0f, float _y = 0.0f, float _z = 0.0f);
     Vector3 operator+(const Vector3 &other) const;
     Vector3 operator-(const Vector3 &other) const;
-    Vector3 operator*(const double &scalar) const;
     Vector3 operator*(const float &scalar) const;
-    Vector3 operator*(const int &scalar) const;
+    Vector3 operator/(const float &scalar) const;
     Vector3 &operator=(const Vector3 &other);
     bool operator==(const Vector3 &other) const;
-    Vector3 rotate(const float &angle, const char &axis);
-    Vector3 normalized();
-    float magnitude() const;
-    Vector3 inverse() const;
-    static Vector3 Lerp(const Vector3 &start, const Vector3 &end, const float &t);
-    static Vector3 Normalize(Vector3 &vector);
-    static float Dot(const Vector3 &a, const Vector3 &b);
-    static float Angle(const Vector3 &from, const Vector3 &to);
-    static Vector3 ClampMagnitude(Vector3 &vector, const float &magnitude);
-    static Vector3 ClampByParameter(Vector3 &vector, const char &axis, const float &magnitude);
+    bool operator!=(const Vector3 &other) const;
+    Vector3 rotate(const float &angle, const char &axis); // !! currently not working !! return a rotated vector (Read Only)
+    Vector3 normalized();                                 // return a normalized vector (Read Only)
+    float magnitude() const;                              // return the length of a vector (Read Only)
+    Vector3 inverse() const;                              // return the inverse of the vector (Read Only)
+    // Vector2 toVector2() const;                            // return the x & y components of a Vector3 as Vector2 (Read Only)
+    Vector3 xyPlane() const; // return the vector but with z = 0 (Read Only)
+
+    static Vector3 Lerp(const Vector3 &start, const Vector3 &end, const float &t); // Linearly interpolate between two points (Read Only)
+    static Vector3 Normalize(Vector3 &vector);                                     // normalize the input vector
+    static float Dot(const Vector3 &a, const Vector3 &b);                          // return dot product of two vectors
+    static float Angle(const Vector3 &from, const Vector3 &to);                    // !! currently only works with angles bellow 90° !! return the angle between two vectors (Read Only)
+    static Vector3 ClampMagnitude(Vector3 &vector, const float &magnitude);        // clamp the length of a vector but keeps the direction
+
+    static Vector3 forward; // Shorthand for writing Vector3(1, 0, 0)
+    static Vector3 back;    // Shorthand for writing Vector3(-1, 0, 0)
+    static Vector3 right;   // Shorthand for writing Vector3(0, 1, 0)
+    static Vector3 left;    // Shorthand for writing Vector3(0, -1, 0)
+    static Vector3 up;      // Shorthand for writing Vector3(0, 0, 1)
+    static Vector3 down;    // Shorthand for writing Vector3(0, 0, -1)
+    static Vector3 zero;    // Shorthand for writing Vector3(0, 0, 0)
 };
 
 class Vector2
@@ -59,24 +69,34 @@ public:
     Vector2(float _x = 0.0f, float _y = 0.0f);
     Vector2 operator+(const Vector2 &other) const;
     Vector2 operator-(const Vector2 &other) const;
-    Vector2 operator*(const double &scalar) const;
     Vector2 operator*(const float &scalar) const;
-    Vector2 operator*(const int &scalar) const;
+    Vector2 operator/(const float &scalar) const;
     Vector2 &operator=(const Vector2 &other);
     bool operator==(const Vector2 &other) const;
-    Vector2 rotate(const float &angle, const char &axis);
-    Vector2 normalized() const;
-    float magnitude() const;
-    Vector2 inverse() const;
-    static Vector2 Lerp(const Vector2 &start, const Vector2 &end, const float &t);
-    static Vector2 Normalize(Vector2 &vector);
-    static float Dot(const Vector2 &a, const Vector2 &b);
-    static float Angle(const Vector2 &from, const Vector2 &to);
-    static Vector2 ClampMagnitude(Vector2 &vector, const float &magnitude);
-    static Vector2 ClampByParameter(Vector2 &vector, const char &axis, const float &magnitude);
+    bool operator!=(const Vector2 &other) const;
+    Vector2 rotate(const float &angle); // !! currently not working !! return a rotated vector (Read Only)
+    Vector2 normalized() const;         // return a normalized vector (Read Only)
+    float magnitude() const;            // return the length of the vector (Read Only)
+    Vector2 inverse() const;            // return the inverse of the vector (Read Only)
+    Vector3 toVector3() const;          // return the x & y components of a Vector2 as Vector3 with z = 0 (Read Only)
+
+    static Vector2 Lerp(const Vector2 &start, const Vector2 &end, const float &t); // Linearly interpolate between two points (Read Only)
+    static Vector2 Normalize(Vector2 &vector);                                     // normalize the input vector
+    static float Dot(const Vector2 &a, const Vector2 &b);                          // return dot product of two vectors
+    static float Angle(const Vector2 &from, const Vector2 &to);                    // return the angle between two vectors (Read Only)
+    static Vector2 ClampMagnitude(Vector2 &vector, const float &magnitude);        // clamp the length of a vector but keeps the direction
+
+    static Vector2 forward; // Shorthand for writing Vector2(1, 0)
+    static Vector2 back;    // Shorthand for writing Vector2(-1, 0)
+    static Vector2 right;   // Shorthand for writing Vector2(0, 1)
+    static Vector2 left;    // Shorthand for writing Vector2(0, -1)
+    static Vector2 zero;    // Shorthand for writing Vector2(0, 0)
 };
 
 bool almostEqual(const float &a, const float &b, const float &epsilon = 0.005);
+float calculatePathLength(const std::vector<Vector3> &path);
+size_t findLongestPath(const std::vector<float> &pathLengths);
+Vector3 interpolatePathByLength(const std::vector<Vector3> &path, float targetLength);
 
 // ================================================================
 // ===                          output                          ===
@@ -103,24 +123,17 @@ struct Servo_Struct
 
 struct Leg_Struct
 {
-    int minLED, maxLED;     // index of LEDs on leg from root
-    Servo_Struct Servo[3];  // servos for each leg (from root to tip)
-    bool mirrored;          // ik for mirrored legs is slightly different
-    int mountAngle;         // angle at which the leg is mounted (from center line forwared)
-    Vector3 targetEndpoint; // enpoint the leg is trying to reach (used for IK calculations)
-    // Vector3 currentEnpoint;                // enpoint used for ik calculations
-    Vector3 vectorBodyOrigionToLegOrigion; // !! currently not working !! vector between body origion and leg origion (root joint) with no body rotation
-    Vector3 vectorBodyOrigionToZeroPoint;  // !! currently not working !! vector between body origion and leg zero point origion (i.e where the leg at imput (0, 0, 0) will be)
-    const int distanceToBodyOrigion = 100; // !! currently not working !! distance of leg origion to body origion
-    bool lifted = false;                   // if the leg is lifted for taking a step -> set to true
+    int minLED, maxLED;               // index of LEDs on leg from root
+    Servo_Struct Servo[3];            // servos for each leg (from root to tip)
+    bool mirrored;                    // ik for mirrored legs is slightly different
+    int mountAngle;                   // angle at which the leg is mounted (from center line forwared)
+    Vector3 targetPosition;           // enpoint the leg is trying to reach (used for IK calculations)
+    Vector3 curPosition;              // cur enpoint of leg
+    std::vector<Vector3> pointOnPath; // dynamic number of points on a path that the is traveling
+    bool lifted = false;              // if the leg is lifted for taking a step -> set to true
 };
 
 extern Leg_Struct Leg[6];
-
-struct Body_Struct
-{
-    Vector3 positionOffset; // offset of body to normal center positon i.e. the center between all legs in their zero position
-};
 
 byte Servo_init();
 void Servo_update(const Servo_Struct &servo);
@@ -200,12 +213,25 @@ void LED_leg_animation(const int &legID, const int &aminationID, const float &le
 void Debug_Serial_out();
 void Debug_WaitForSerial();
 void Debug_delay();
+
+#endif
+
+#ifdef DEBUG_ARDUINO
+
+#define DEBUG_START PB1
+#define DEBUG_CLOCK PB10
+#define DEBUG_DATA PB11
+#define DEBUG_LINE_RETURN PB0
+
+void Debug_TransferData(const float &value);
+void Debug_LineReturn();
+
 #endif
 
 #ifdef DEBUG_LED
 
-void Debug_Led_8bit(const uint8_t &error_code);
-void Debug_Led_16bit(const uint16_t &error_code);
+void Debug_Led_8bit(const int8_t &error_code);
+void Debug_Led_16bit(int16_t error_code);
 
 #endif
 // return 0b00000000;
@@ -226,7 +252,7 @@ void Debug_Led_16bit(const uint16_t &error_code);
 #define LENGTH_FEMUR 80
 #define LENGTH_TIBIA 120
 
-void calcLegServoAngles(Leg_Struct &leg, Body_Struct &body);
+void calcLegServoAngles(Leg_Struct &leg);
 
 #endif
 
@@ -243,6 +269,6 @@ void LegStartup();
 
 Vector2 projectPointToCircle(const float &radius, const Vector2 &point, Vector2 direction);
 
-void walkCycle(Vector2 direction, const int &height, const int &stepRadius);
+void walkCycle(Vector2 direction, const int &height, const int &rotation, const int &stepRadius);
 
 #endif

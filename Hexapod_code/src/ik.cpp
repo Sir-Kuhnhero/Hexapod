@@ -8,29 +8,25 @@
 
 const Vector3 legZeroOffset(130, 0, -120); // local offset from leg origion to set the zero position somewhere more useful
 
-Vector3 calcVectorlegOrigionToTip(Leg_Struct &leg, Body_Struct &body);
-
-void calcLegServoAngles(Leg_Struct &leg, Body_Struct &body)
+void calcLegServoAngles(Leg_Struct &leg)
 {
 
-    // ########################################################
-    // ### adjust coodinated for loacal space (rotated leg) ###
-    // ########################################################
-
-    // Vector3 targetEnpointWidthBodyOffset = calcVectorlegOrigionToTip(leg, body); !! currently not working !!
+    // ###############################################################
+    // ### adjust coodinated for loacal space of leg (rotated leg) ###
+    // ###############################################################
 
     Vector3 localCoordinates;
 
     float sinAlpha = sin((leg.mountAngle) * DEG_TO_RAD);
     float cosAlpha = cos((leg.mountAngle) * DEG_TO_RAD);
 
-    localCoordinates.x = cosAlpha * leg.targetEndpoint.x - sinAlpha * leg.targetEndpoint.y; // adjust for leg mounting rotation and zer0 position
+    localCoordinates.x = cosAlpha * leg.targetPosition.x - sinAlpha * leg.targetPosition.y; // adjust for leg mounting rotation and zer0 position
     localCoordinates.x += legZeroOffset.x;                                                  // adjust for zero position (otherwise the leg origion is (0,0,0))
 
-    localCoordinates.y = sinAlpha * leg.targetEndpoint.x + cosAlpha * leg.targetEndpoint.y;
+    localCoordinates.y = sinAlpha * leg.targetPosition.x + cosAlpha * leg.targetPosition.y;
     localCoordinates.y += legZeroOffset.y;
 
-    localCoordinates.z = leg.targetEndpoint.z + legZeroOffset.z;
+    localCoordinates.z = leg.targetPosition.z + legZeroOffset.z;
 
     // ###################
     // ### calc angles ###
@@ -67,14 +63,8 @@ void calcLegServoAngles(Leg_Struct &leg, Body_Struct &body)
     leg.Servo[0].targetAngle = angle_0;
     leg.Servo[1].targetAngle = angle_1;
     leg.Servo[2].targetAngle = angle_2;
-}
 
-// !! currently not working !!
-Vector3 calcVectorlegOrigionToTip(Leg_Struct &leg, Body_Struct &body)
-{
-    Vector3 vectorBodyOrigonToLegEnpoint = leg.vectorBodyOrigionToZeroPoint + body.positionOffset + leg.targetEndpoint; // vector from current body origion (offset from normal center has been applied) to leg targetEndpoint
-
-    return vectorBodyOrigonToLegEnpoint - leg.vectorBodyOrigionToLegOrigion;
+    leg.curPosition = leg.targetPosition;
 }
 
 #endif

@@ -4,6 +4,7 @@
 // ================================================================
 // ===                           math                           ===
 // ================================================================
+
 #pragma region Vector3
 
 Vector3::Vector3(float _x, float _y, float _z) : x(_x), y(_y), z(_z) {}
@@ -21,22 +22,16 @@ Vector3 Vector3::operator-(const Vector3 &other) const
     return Vector3(x - other.x, y - other.y, z - other.z);
 }
 
-// Overload the * operator for scaling the vector by a scalar (double)
-Vector3 Vector3::operator*(const double &scalar) const
-{
-    return Vector3(x * scalar, y * scalar, z * scalar);
-}
-
 // Overload the * operator for scaling the vector by a scalar (float)
 Vector3 Vector3::operator*(const float &scalar) const
 {
     return Vector3(x * scalar, y * scalar, z * scalar);
 }
 
-// Overload the * operator for scaling the vector by a scalar (int)
-Vector3 Vector3::operator*(const int &scalar) const
+// Overload the / operator for scaling the vector by a scalar (float)
+Vector3 Vector3::operator/(const float &scalar) const
 {
-    return Vector3(x * scalar, y * scalar, z * scalar);
+    return Vector3(x / scalar, y / scalar, z / scalar);
 }
 
 // Overload the assignment operator
@@ -56,10 +51,16 @@ bool Vector3::operator==(const Vector3 &other) const
 {
     return almostEqual(x, other.x) && almostEqual(y, other.y) && almostEqual(z, other.z);
 }
+
+// due to floating-point precision two floats might not be exactly the same
+bool Vector3::operator!=(const Vector3 &other) const
+{
+    return !(almostEqual(x, other.x) && almostEqual(y, other.y) && almostEqual(z, other.z));
+}
 #pragma endregion
 
 #pragma region Vector functions
-// !! currently not working !! returns a rotated vector (does not modify the origional vector) !! currently not working
+// !! currently not working !! return a rotated vector (Read Only)
 Vector3 Vector3::rotate(const float &angle, const char &axis)
 {
     Vector3 output;
@@ -89,7 +90,7 @@ Vector3 Vector3::rotate(const float &angle, const char &axis)
     return output;
 }
 
-// returns a normalized vector (Read Only)
+// return a normalized vector (Read Only)
 Vector3 Vector3::normalized()
 {
     float length = sqrt(x * x + y * y + z * z);
@@ -106,13 +107,13 @@ Vector3 Vector3::normalized()
     return output;
 }
 
-// returns the length of a vector (Read Only)
+// return the length of a vector (Read Only)
 float Vector3::magnitude() const
 {
     return sqrt(x * x + y * y + z * z);
 }
 
-// returns the inverse of the vector (Read Only)
+// return the inverse of the vector (Read Only)
 Vector3 Vector3::inverse() const
 {
     Vector3 output(x * -1, y * -1, z * -1);
@@ -120,7 +121,23 @@ Vector3 Vector3::inverse() const
     return output;
 }
 
-// Linearly interpolates between two points.
+// return the x & y components of a Vector3 as Vector2 (Read Only)
+// Vector2 Vector3::toVector2() const
+//{
+//    Vector2 output(x, y);
+//
+//    return output;
+//}
+
+// return the vector but with z = 0 (Read Only)
+Vector3 Vector3::xyPlane() const
+{
+    Vector3 output(x, y, 0);
+
+    return output;
+}
+
+// Linearly interpolate between two points (Read Only)
 Vector3 Vector3::Lerp(const Vector3 &start, const Vector3 &end, const float &t)
 {
     Vector3 result;
@@ -130,7 +147,7 @@ Vector3 Vector3::Lerp(const Vector3 &start, const Vector3 &end, const float &t)
     return result;
 }
 
-// normalizes the input vector
+// normalize the input vector
 Vector3 Vector3::Normalize(Vector3 &vector)
 {
     float length = sqrt(vector.x * vector.x + vector.y * vector.y + vector.z * vector.z);
@@ -146,12 +163,13 @@ Vector3 Vector3::Normalize(Vector3 &vector)
     return vector;
 }
 
+// return dot product of two vectors
 float Vector3::Dot(const Vector3 &a, const Vector3 &b)
 {
     return a.x * b.x + a.y * b.y + a.z * b.z;
 }
 
-// !! currently only works with angles bellow 90° !! returns tha ansgle betweem two vectors
+// !! currently only works with angles bellow 90° !! return the angle between two vectors (Read Only)
 float Angle(const Vector3 &from, const Vector3 &to)
 {
     // Calculate the cosine of the angle using the dot product and vector magnitudes
@@ -161,7 +179,7 @@ float Angle(const Vector3 &from, const Vector3 &to)
     return acos(cosAngle) * RAD_TO_DEG;
 }
 
-// clamps the length of a vector but keeps the direction
+// clamp the length of a vector but keeps the direction
 Vector3 Vector3::ClampMagnitude(Vector3 &vector, const float &magnitude)
 {
     if (vector.magnitude() > magnitude)
@@ -170,38 +188,19 @@ Vector3 Vector3::ClampMagnitude(Vector3 &vector, const float &magnitude)
     return vector;
 }
 
-// clams the value of a parameter (x, y, or z) of a vector but keeps direction the same (scales to compensate)
-Vector3 Vector3::ClampByParameter(Vector3 &vector, const char &axis, const float &magnitude)
-{
-    float newLength;
-
-    switch (axis)
-    {
-    case 'x':
-        newLength = (vector.x / magnitude) * vector.magnitude();
-        Vector3::ClampMagnitude(vector, newLength);
-        break;
-    case 'y':
-        newLength = (vector.y / magnitude) * vector.magnitude();
-        Vector3::ClampMagnitude(vector, newLength);
-        break;
-    case 'z':
-        newLength = (vector.z / magnitude) * vector.magnitude();
-        Vector3::ClampMagnitude(vector, newLength);
-        break;
-    default:
-        break;
-    }
-
-    return vector;
-}
-
 #pragma endregion
+
+Vector3 Vector3::forward(1, 0, 0);
+Vector3 Vector3::back(-1, 0, 0);
+Vector3 Vector3::right(0, 1, 0);
+Vector3 Vector3::left(0, -1, 0);
+Vector3 Vector3::up(0, 0, 1);
+Vector3 Vector3::down(0, 0, -1);
+Vector3 Vector3::zero(0, 0, 0);
 
 #pragma endregion
 
 #pragma region Vector2
-
 Vector2::Vector2(float _x, float _y) : x(_x), y(_y)
 {
 }
@@ -219,22 +218,16 @@ Vector2 Vector2::operator-(const Vector2 &other) const
     return Vector2(x - other.x, y - other.y);
 }
 
-// Overload the * operator for scaling the vector by a scalar (double)
-Vector2 Vector2::operator*(const double &scalar) const
-{
-    return Vector2(x * scalar, y * scalar);
-}
-
 // Overload the * operator for scaling the vector by a scalar (float)
 Vector2 Vector2::operator*(const float &scalar) const
 {
     return Vector2(x * scalar, y * scalar);
 }
 
-// Overload the * operator for scaling the vector by a scalar (int)
-Vector2 Vector2::operator*(const int &scalar) const
+// Overload the / operator for scaling the vector by a scalar (float)
+Vector2 Vector2::operator/(const float &scalar) const
 {
-    return Vector2(x * scalar, y * scalar);
+    return Vector2(x / scalar, y / scalar);
 }
 
 // Overload the assignment operator
@@ -253,18 +246,24 @@ bool Vector2::operator==(const Vector2 &other) const
 {
     return almostEqual(x, other.x) && almostEqual(y, other.y);
 }
+
+// due to floating-point precision two floats might not be exactly the same
+bool Vector2::operator!=(const Vector2 &other) const
+{
+    return !(almostEqual(x, other.x) && almostEqual(y, other.y));
+}
 #pragma endregion
 
 #pragma region Vector functions
-// !! currently not working !! returns a rotated vector (does not modify the origional vector) !! currently not working
-Vector2 Vector2::rotate(const float &angle, const char &axis)
+// !! currently not working !! return a rotated vector (Read Only)
+Vector2 Vector2::rotate(const float &angle)
 {
-    Vector2 output;
+    Vector2 output(x * sin(angle * DEG_TO_RAD), y * cos(angle * DEG_TO_RAD));
 
     return output;
 }
 
-// returns a normalized vector (Read Only)
+// return a normalized vector (Read Only)
 Vector2 Vector2::normalized() const
 {
     float length = sqrt(x * x + y * y);
@@ -280,13 +279,13 @@ Vector2 Vector2::normalized() const
     return output;
 }
 
-// returns the length of the vector (Read Only)
+// return the length of the vector (Read Only)
 float Vector2::magnitude() const
 {
     return sqrt(x * x + y * y);
 }
 
-// returns the inverse of the vector (Read Only)
+// return the inverse of the vector (Read Only)
 Vector2 Vector2::inverse() const
 {
     Vector2 output(x * -1, y * -1);
@@ -294,7 +293,15 @@ Vector2 Vector2::inverse() const
     return output;
 }
 
-// Linearly interpolates between two points.
+// return the x & y components of a Vector2 as Vector3 with z = 0 (Read Only)
+Vector3 Vector2::toVector3() const
+{
+    Vector3 output(x, y, 0);
+
+    return output;
+}
+
+// Linearly interpolate between two points (Read Only)
 Vector2 Vector2::Lerp(const Vector2 &start, const Vector2 &end, const float &t)
 {
     Vector2 result;
@@ -303,7 +310,7 @@ Vector2 Vector2::Lerp(const Vector2 &start, const Vector2 &end, const float &t)
     return result;
 }
 
-// normalizes the input vector
+// normalize the input vector
 Vector2 Vector2::Normalize(Vector2 &vector)
 {
     float length = sqrt(vector.x * vector.x + vector.y * vector.y);
@@ -317,12 +324,13 @@ Vector2 Vector2::Normalize(Vector2 &vector)
     return vector;
 }
 
+// return dot product of two vectors
 float Vector2::Dot(const Vector2 &a, const Vector2 &b)
 {
     return a.x * b.x + a.y * b.y;
 }
 
-// returns tha ansgle betweem two vectors
+// return the angle between two vectors (Read Only)
 float Vector2::Angle(const Vector2 &from, const Vector2 &to)
 {
     // Calculate the angle difference in radians
@@ -332,7 +340,7 @@ float Vector2::Angle(const Vector2 &from, const Vector2 &to)
     return angleDiff * RAD_TO_DEG;
 }
 
-// clamps the length of a vector but keeps the direction
+// clamp the length of a vector but keeps the direction
 Vector2 Vector2::ClampMagnitude(Vector2 &vector, const float &magnitude)
 {
     if (vector.magnitude() > magnitude)
@@ -341,29 +349,13 @@ Vector2 Vector2::ClampMagnitude(Vector2 &vector, const float &magnitude)
     return vector;
 }
 
-// clams the value of a parameter (x or y) of a vector but keeps direction the same (scales to compensate)
-Vector2 Vector2::ClampByParameter(Vector2 &vector, const char &axis, const float &magnitude)
-{
-    float newLength;
-
-    switch (axis)
-    {
-    case 'x':
-        newLength = (vector.x / magnitude) * vector.magnitude();
-        Vector2::ClampMagnitude(vector, newLength);
-        break;
-    case 'y':
-        newLength = (vector.y / magnitude) * vector.magnitude();
-        Vector2::ClampMagnitude(vector, newLength);
-        break;
-    default:
-        break;
-    }
-
-    return vector;
-}
-
 #pragma endregion
+
+Vector2 Vector2::forward(1, 0);
+Vector2 Vector2::back(-1, 0);
+Vector2 Vector2::right(0, 1);
+Vector2 Vector2::left(0, -1);
+Vector2 Vector2::zero(0, 0);
 
 #pragma endregion
 
@@ -371,4 +363,100 @@ Vector2 Vector2::ClampByParameter(Vector2 &vector, const char &axis, const float
 bool almostEqual(const float &a, const float &b, const float &epsilon)
 {
     return fabs(a - b) < epsilon;
+}
+
+// Function to calculate the length of a path defined by a dynamic array of Vector3
+float calculatePathLength(const std::vector<Vector3> &path)
+{
+    float length = 0.0;
+
+    for (size_t i = 1; i < path.size(); ++i)
+    {
+        // Calculate the length of the vector between consecutive points
+        Vector3 segment = path[i] - path[i - 1];
+        length += segment.magnitude();
+    }
+
+    return length;
+}
+
+// Function to find the index of the longest path in an array of path lengths
+size_t findLongestPath(const std::vector<float> &pathLengths)
+{
+    if (pathLengths.empty())
+    {
+        return 0; // Handle empty array gracefully
+    }
+
+    float maxLength = pathLengths[0];
+    size_t longestId = 0;
+
+    for (size_t i = 1; i < pathLengths.size(); ++i)
+    {
+        if (pathLengths[i] > maxLength)
+        {
+            maxLength = pathLengths[i];
+            longestId = i;
+        }
+    }
+
+    return longestId;
+}
+
+// Function to interpolate points along a path by a specified length
+Vector3 interpolatePathByLength(const std::vector<Vector3> &path, float targetLength)
+{
+    Vector3 interpolatedPath;
+    float totalLength = calculatePathLength(path);
+    targetLength = constrain(targetLength, 0, totalLength);
+
+    // Handle invalid input gracefully
+    if (totalLength <= 0 || targetLength <= 0)
+    {
+        return interpolatedPath;
+    }
+
+    // can't go beond path limits
+    if (targetLength >= totalLength)
+    {
+        for (size_t i = 1; i < path.size(); i++)
+        {
+            interpolatedPath = interpolatedPath + (path[i] - path[i - 1]);
+        }
+
+        return interpolatedPath;
+    }
+
+    // interpolate
+    float currentLength = 0;
+
+    for (size_t i = 1; i < path.size(); ++i)
+    {
+        Vector3 segment = path[i] - path[i - 1];
+        float segmentLength = segment.magnitude();
+
+        if (currentLength + segmentLength >= targetLength)
+        {
+            // Calculate the interpolation ratio
+            float t = (targetLength - currentLength) / segmentLength;
+
+            // Interpolate the point and add it to the path
+            interpolatedPath = segment * t;
+
+            // add all previous segments
+            for (size_t o = 1; o < i; o++)
+            {
+                interpolatedPath = interpolatedPath + path[o - 1];
+            }
+
+            // Exit the loop since we've reached the target length
+            return interpolatedPath;
+        }
+
+        currentLength += segmentLength;
+    }
+
+    Debug_Led_8bit(0b10101010);
+    delay(1000);
+    return Vector3::zero;
 }

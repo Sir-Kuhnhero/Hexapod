@@ -12,8 +12,6 @@ Adafruit_PWMServoDriver servoDriver_1 = Adafruit_PWMServoDriver(0x41);
 
 Leg_Struct Leg[6];
 
-Body_Struct Body;
-
 byte Servo_init()
 {
     servoDriver_0.begin();
@@ -143,16 +141,6 @@ byte Servo_init()
     {
         Leg[i].Servo[1].minAngle = 0;
         Leg[i].Servo[1].maxAngle = 180;
-
-        // !! currently not working !!
-        // Vector3 unrotatedLegOrigionVector(Leg[i].distanceToBodyOrigion, 0, 0);
-        // Vector3 unrotatedZeroPointVector(Leg[i].distanceToBodyOrigion + LENGTH_TROCHANTER + LENGTH_FEMUR, 0, LENGTH_TIBIA * -1);
-        //  Vector3 rotationVector(0, 0, Leg[i].mountAngle);
-
-        // Leg[i].vectorBodyOrigionToLegOrigion = rotateVector(unrotatedLegOrigionVector, rotationVector);
-        // Leg[i].vectorBodyOrigionToZeroPoint = rotateVector(unrotatedZeroPointVector, rotationVector);
-        // Leg[i].vectorBodyOrigionToLegOrigion = unrotatedLegOrigionVector.rotate(Leg[i].mountAngle, 'z');
-        // Leg[i].vectorBodyOrigionToZeroPoint = unrotatedZeroPointVector.rotate(Leg[i].mountAngle, 'z');
     }
 
 #pragma endregion
@@ -221,7 +209,7 @@ void Servo_moveAllToMaxValue()
 
 void Leg_update(const int &legID)
 {
-    calcLegServoAngles(Leg[legID], Body);
+    calcLegServoAngles(Leg[legID]);
 
     Servo_update(Leg[legID].Servo[0]);
     Servo_update(Leg[legID].Servo[1]);
