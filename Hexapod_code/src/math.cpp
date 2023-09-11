@@ -406,7 +406,7 @@ size_t findLongestPath(const std::vector<float> &pathLengths)
 // Function to interpolate points along a path by a specified length
 Vector3 interpolatePathByLength(const std::vector<Vector3> &path, float targetLength)
 {
-    Vector3 interpolatedPath;
+    Vector3 interpolatedPath = path[0];
     float totalLength = calculatePathLength(path);
     targetLength = constrain(targetLength, 0, totalLength);
 
@@ -430,6 +430,9 @@ Vector3 interpolatePathByLength(const std::vector<Vector3> &path, float targetLe
     // interpolate
     float currentLength = 0;
 
+    // add the first point as a starting value
+    interpolatedPath;
+
     for (size_t i = 1; i < path.size(); ++i)
     {
         Vector3 segment = path[i] - path[i - 1];
@@ -441,22 +444,50 @@ Vector3 interpolatePathByLength(const std::vector<Vector3> &path, float targetLe
             float t = (targetLength - currentLength) / segmentLength;
 
             // Interpolate the point and add it to the path
-            interpolatedPath = segment * t;
-
-            // add all previous segments
-            for (size_t o = 1; o < i; o++)
-            {
-                interpolatedPath = interpolatedPath + path[o - 1];
-            }
+            interpolatedPath = interpolatedPath + segment * t;
 
             // Exit the loop since we've reached the target length
             return interpolatedPath;
         }
+
+        // add segment to final output
+        interpolatedPath = interpolatedPath + segment;
 
         currentLength += segmentLength;
     }
 
     Debug_Led_8bit(0b10101010);
     delay(1000);
-    return Vector3::zero;
+    return interpolatedPath;
+}
+
+// returns a point on a circle based on a point inside the circle that is projected by a vector
+Vector2 projectPointToCircle(const float &radius, const Vector2 &point, Vector2 direction)
+{
+    // no direction for projection -> no calculation
+    if (direction.magnitude() == 0)
+        return point;
+    // start bein (0, 0) or haveing the same direction as directionInput makes the calculation very simple
+    if (point.magnitude() == 0 || point.normalized() == direction.normalized() || point.normalized() * -1 == direction.normalized())
+        return direction.normalized() * radius;
+
+    // if point is outside the circle reposition it to be inside
+    if (direction.magnitude() > radius - 0.005)
+        Vector2::ClampMagnitude(direction, radius - 0.005);
+
+    float lengthC = point.magnitude();
+
+    float angleBeta = 180 - Vector2::Angle(direction, point); // calculate angle beta on unequal triangle
+
+    // calculate missing Angles
+    float sinGamma = (lengthC * sin(angleBeta * DEG_TO_RAD)) / radius;
+
+    float angleGamma = asin(sinGamma) * RAD_TO_DEG;
+    float angleAlpha = 180 - angleBeta - angleGamma;
+
+    float projectionLength = (radius * sin(angleAlpha * DEG_TO_RAD)) / sin(angleBeta * DEG_TO_RAD);
+
+    Vector2 output = point + direction.normalized() * projectionLength;
+
+    return output;
 }

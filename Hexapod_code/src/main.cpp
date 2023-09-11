@@ -3,20 +3,13 @@
 
 int loopTime;
 
+Vector2 directionInput(100, 0);
+int rotaionInput = 0;
+int groundClearance = 30;
+int stepRadius = 100;
+
 void setup()
 {
-
-  Serial.begin(115200);
-  pinMode(PC13, OUTPUT);
-
-#ifdef DEBUG_ARDUINO
-
-  pinMode(DEBUG_START, OUTPUT);
-  pinMode(DEBUG_CLOCK, OUTPUT);
-  pinMode(DEBUG_DATA, OUTPUT);
-  pinMode(DEBUG_LINE_RETURN, OUTPUT);
-
-#endif
 
 #ifdef WS2812B_LED // initialitze LEDs
   Led_init();
@@ -54,35 +47,18 @@ void setup()
 
 #endif
 
-  while (true)
-  {
-    Serial.println("hi");
-
-    digitalWrite(PC13, HIGH);
-    delay(250);
-    digitalWrite(PC13, LOW);
-    delay(250);
-  }
-
-  LegStartup();
+  standUp();
 }
 
 void loop()
 {
   int long curTime = millis();
 
-  Vector2 direction(50, 0); // in what direction and how fast is the hexapod walking
-  int height = 30;          // how heigh of the groung is the hexapod walking
-  int stepRadius = 100;     // how long are the steps taken
-  int rotation = 0;
+  walkCycle();
 
-  // walkCycle(direction, height, rotation, stepRadius);
-
-  // Output_update();
+  Output_update();
 
   // delay(10);
-
-  Debug_TransferData(float(loopTime));
 
   loopTime = millis() - curTime;
 }

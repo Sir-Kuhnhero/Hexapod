@@ -8,19 +8,7 @@
 
 #define DEBUG
 // #define DEBUG_SERIAL
-#define DEBUG_ARDUINO
 #define DEBUG_LED
-
-// ================================================================
-// ===                           main                           ===
-// ================================================================
-extern int loopTime;
-
-// time refferences to see how long parts of the code take
-extern int long time1;
-extern int long time1;
-extern int long time2;
-extern int long time3;
 
 // ================================================================
 // ===                           math                           ===
@@ -97,6 +85,16 @@ bool almostEqual(const float &a, const float &b, const float &epsilon = 0.005);
 float calculatePathLength(const std::vector<Vector3> &path);
 size_t findLongestPath(const std::vector<float> &pathLengths);
 Vector3 interpolatePathByLength(const std::vector<Vector3> &path, float targetLength);
+Vector2 projectPointToCircle(const float &radius, const Vector2 &point, Vector2 direction);
+
+// ================================================================
+// ===                           main                           ===
+// ================================================================
+extern int loopTime;
+extern Vector2 directionInput; // what direction and how fast (vector length) the hexapod should walking
+extern int rotaionInput;       // how much and fas should the hexapod rotate
+extern int groundClearance;    // how heigh of the groung is the hexapod walking
+extern int stepRadius;         // how long of a step can be taken taken
 
 // ================================================================
 // ===                          output                          ===
@@ -216,18 +214,6 @@ void Debug_delay();
 
 #endif
 
-#ifdef DEBUG_ARDUINO
-
-#define DEBUG_START PB1
-#define DEBUG_CLOCK PB10
-#define DEBUG_DATA PB11
-#define DEBUG_LINE_RETURN PB0
-
-void Debug_TransferData(const float &value);
-void Debug_LineReturn();
-
-#endif
-
 #ifdef DEBUG_LED
 
 void Debug_Led_8bit(const int8_t &error_code);
@@ -265,10 +251,8 @@ void calcLegServoAngles(Leg_Struct &leg);
 extern int legLiftDistance;  // how high each step of the ground is
 extern float legLiftIncline; // how steep the incline of leg ascent when lifting is (when moving forward)
 
-void LegStartup();
+void standUp();
 
-Vector2 projectPointToCircle(const float &radius, const Vector2 &point, Vector2 direction);
-
-void walkCycle(Vector2 direction, const int &height, const int &rotation, const int &stepRadius);
+void walkCycle();
 
 #endif

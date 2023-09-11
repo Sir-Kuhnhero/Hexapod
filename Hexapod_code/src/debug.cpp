@@ -57,49 +57,6 @@ void Debug_delay()
 }
 #endif
 
-#ifdef DEBUG_ARDUINO
-
-void Debug_TransferData(const float &value)
-{
-    uint32_t floatBits; // Variable to store the bits of the float
-
-    memcpy(&floatBits, &value, sizeof(float));
-
-    digitalWrite(DEBUG_START, HIGH);
-
-    for (int i = 0; i < 32; i++)
-    {
-        // Extract the i-th bit from the floatBits variable
-        bool bitValue = (floatBits >> i) & 1;
-
-        // Send the bit over the data line
-        digitalWrite(DEBUG_DATA, bitValue);
-
-        // make receiver read bit
-        digitalWrite(DEBUG_CLOCK, LOW);
-        delay(1);
-        digitalWrite(DEBUG_CLOCK, HIGH);
-        delay(1);
-        digitalWrite(DEBUG_CLOCK, LOW);
-    }
-
-    digitalWrite(DEBUG_START, LOW);
-
-    Debug_LineReturn();
-}
-
-void Debug_LineReturn()
-{
-    delay(1);
-    digitalWrite(DEBUG_LINE_RETURN, LOW);
-    delay(1);
-    digitalWrite(DEBUG_LINE_RETURN, HIGH);
-    delay(1);
-    digitalWrite(DEBUG_LINE_RETURN, LOW);
-}
-
-#endif
-
 #ifdef DEBUG_LED
 
 // using the middle eye ring to represent a 8bit error code
