@@ -166,15 +166,39 @@ void walkCycle()
 // choose lifted legs for furthes step (only when all legs are on the ground)
 void setLegStateAtWalkInit()
 {
-    // !! not inplemented !! choose new lifted pair based on their position (which group makes more sense for the next step)
+    // choose new lifted legs based on their position (which group makes more sense for the next step)
+    float possibleStepLength[6]; // how long of a step can the leg take while being in contackt with the ground
 
-    // temp for testing
-    Leg[0].lifted = true;
-    Leg[1].lifted = false;
-    Leg[2].lifted = true;
-    Leg[3].lifted = false;
-    Leg[4].lifted = true;
-    Leg[5].lifted = false;
+    for (size_t i = 0; i < 6; i++)
+    {
+        // calc distance the leg can travel as Push leg
+        Leg[i].lifted = false;
+        calcLegPath(Leg[i]);
+
+        possibleStepLength[i] = calculatePathLength(Leg[i].pointOnPath);
+    }
+
+    // legs act in group of threes (0, 2, 4 and 1, 3, 5) -> get leg for each group that takes the smalles step
+    int indexOfShortesPath = findSmallestValue(possibleStepLength);
+
+    if (indexOfShortesPath % 2 == 0)
+    {
+        Leg[0].lifted = false;
+        Leg[1].lifted = true;
+        Leg[2].lifted = false;
+        Leg[3].lifted = true;
+        Leg[4].lifted = false;
+        Leg[5].lifted = true;
+    }
+    else
+    {
+        Leg[0].lifted = true;
+        Leg[1].lifted = false;
+        Leg[2].lifted = true;
+        Leg[3].lifted = false;
+        Leg[4].lifted = true;
+        Leg[5].lifted = false;
+    }
 }
 
 // switch lifted leg group on target reach

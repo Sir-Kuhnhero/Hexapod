@@ -491,3 +491,63 @@ Vector2 projectPointToCircle(const float &radius, const Vector2 &point, Vector2 
 
     return output;
 }
+
+// return index of smalles value in the array
+size_t findSmallestValue(float array[])
+{
+    int length = sizeof(array) / sizeof(array[0]);
+
+    if (length <= 0)
+    {
+        // Handle the case of an empty array or invalid length
+        return 0;
+    }
+
+    int indexOfSmalles = 0; // Assume the first element is the smallest
+
+    for (int i = 1; i < length; i++)
+    {
+        if (array[i] < array[indexOfSmalles])
+        {
+            indexOfSmalles = i; // Update the smallest value
+        }
+    }
+}
+
+// conver dynamic array to static array
+template <typename T> // using this the same function can work with different data types
+T *dynamicToStaticArray(const std::vector<T> &dynamicArray)
+{
+    if (dynamicArray.size() == 0)
+    {
+        // Handle the case where the vector size doesn't match the static array size
+        return;
+    }
+
+    T staticArray[dynamicArray.size()];
+
+    for (size_t i = 0; i < dynamicArray.size(); i++)
+    {
+        staticArray[i] = dynamicArray[i];
+    }
+}
+
+// conver static array to dynamic array
+template <typename T> // using this the same function can work with different data types
+T *dynamicToStaticArray(const T &staticArray)
+{
+    int length = sizeof(staticArray) / sizeof(staticArray[0]);
+
+    if (length == 0)
+    {
+        // Handle the case where the vector size doesn't match the static array size
+        return;
+    }
+
+    std::vector<T> dynamicArray[lentth];
+
+    for (size_t i = 0; i < length; i++)
+    {
+        dynamicArray[i] = staticArray[i];
+    }
+}
