@@ -1,7 +1,6 @@
 #include <Arduino.h>
 #include <Wire.h>
 #include <vector> // used for arrays with changing length
-#include <iostream>
 
 #define WS2812B_LED
 
@@ -95,9 +94,9 @@ size_t findSmallestValue(const std::vector<float> &array); // return index of sm
 // ================================================================
 extern int loopTime;
 extern Vector2 directionInput; // what direction and how fast (vector length) the hexapod should walking
-extern int rotaionInput;       // how much and fas should the hexapod rotate
-extern int groundClearance;    // how heigh of the groung is the hexapod walking
-extern int stepRadius;         // how long of a step can be taken taken
+extern float rotationInput;    // how much and fas should the hexapod rotate
+extern float groundClearance;  // how heigh of the groung is the hexapod walking
+extern float stepRadius;       // how long of a step can be taken taken
 
 // ================================================================
 // ===                          output                          ===
