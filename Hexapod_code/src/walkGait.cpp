@@ -178,8 +178,17 @@ void setLegStateAtWalkInit()
         possibleStepLength[i] = calculatePathLength(Leg[i].pointOnPath);
     }
 
+    // static array has to first be converted to dynamic array
+    std::vector<float> dynamicArray;
+    dynamicArray.resize(sizeof(possibleStepLength) / sizeof(possibleStepLength[0]));
+
+    for (size_t i = 0; i < dynamicArray.size(); i++)
+    {
+        dynamicArray[i] = possibleStepLength[i];
+    }
+
     // legs act in group of threes (0, 2, 4 and 1, 3, 5) -> get leg for each group that takes the smalles step
-    int indexOfShortesPath = findSmallestValue(possibleStepLength);
+    int indexOfShortesPath = findSmallestValue(dynamicArray);
 
     if (indexOfShortesPath % 2 == 0)
     {
@@ -229,14 +238,16 @@ void calcLegPath(Leg_Struct &leg)
     Vector2 projectionDirection;
     Vector2 projectionOrigion;
 
+    Vector2 rotaionProjection = Vector2::forward.rotate(leg.mountAngle + 90);
+
     if (leg.lifted)
     {
-        projectionDirection = direction;
+        projectionDirection = direction + rotaionProjection;
         projectionOrigion = Vector2::zero;
     }
     else
     {
-        projectionDirection = direction.inverse();
+        projectionDirection = direction.inverse() + rotaionProjection.inverse();
 
         Vector2 newOrigion(leg.curPosition.x, leg.curPosition.y);
         projectionOrigion = newOrigion;

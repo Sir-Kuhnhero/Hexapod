@@ -3,7 +3,7 @@
 
 int loopTime;
 
-Vector2 directionInput(100, 0);
+Vector2 directionInput(0, 0);
 int rotaionInput = 0;
 int groundClearance = 30;
 int stepRadius = 100;

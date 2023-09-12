@@ -88,12 +88,7 @@ size_t findLongestPath(const std::vector<float> &pathLengths);
 Vector3 interpolatePathByLength(const std::vector<Vector3> &path, float targetLength);
 Vector2 projectPointToCircle(const float &radius, const Vector2 &point, Vector2 direction);
 
-size_t findSmallestValue(float array[]); // return index of smalles value in the array
-
-template <typename T>
-T *dynamicToStaticArray(const std::vector<T> &dynamicArray);
-template <typename T>
-T *dynamicToStaticArray(const T &staticArray);
+size_t findSmallestValue(const std::vector<float> &array); // return index of smalles value in the array
 
 // ================================================================
 // ===                           main                           ===
