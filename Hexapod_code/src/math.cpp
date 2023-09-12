@@ -491,3 +491,25 @@ Vector2 projectPointToCircle(const float &radius, const Vector2 &point, Vector2 
 
     return output;
 }
+
+// return index of smalles value in the array
+size_t findSmallestValue(const std::vector<float> &array)
+{
+    if (array.size() <= 0)
+    {
+        // Handle the case of an empty array or invalid length
+        return 0;
+    }
+
+    int indexOfSmalles = 0; // Assume the first element is the smallest
+
+    for (int i = 1; i < array.size(); i++)
+    {
+        if (array[i] < array[indexOfSmalles])
+        {
+            indexOfSmalles = i; // Update the smallest value
+        }
+    }
+
+    return indexOfSmalles;
+}
