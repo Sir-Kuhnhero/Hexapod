@@ -5,7 +5,7 @@
 // ===                         walkGait                         ===
 // ================================================================
 
-int legLiftDistance = 30;
+int legLiftDistance = 25;
 float legLiftIncline = 2;
 
 Vector2 direction;
@@ -180,7 +180,7 @@ void setLegStateAtWalkInit()
 
     // static array has to first be converted to dynamic array
     std::vector<float> dynamicArray;
-    dynamicArray.resize(sizeof(possibleStepLength) / sizeof(possibleStepLength[0]));
+    dynamicArray.resize(6);
 
     for (size_t i = 0; i < dynamicArray.size(); i++)
     {

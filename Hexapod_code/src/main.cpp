@@ -5,7 +5,7 @@ int loopTime;
 
 Vector2 directionInput(0, 0);
 int rotaionInput = 0;
-int groundClearance = 30;
+int groundClearance = 35;
 int stepRadius = 100;
 
 void setup()
