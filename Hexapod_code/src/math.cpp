@@ -261,7 +261,7 @@ Vector2 Vector2::rotate(const float &angle)
     Vector2 output;
     float sinOfAngle = sin(angle * DEG_TO_RAD);
     float cosOfAngle = cos(angle * DEG_TO_RAD);
-    output.x = x * cosOfAngle + y * sinOfAngle;
+    output.x = x * cosOfAngle - y * sinOfAngle;
     output.y = x * sinOfAngle + y * cosOfAngle;
 
     return output;

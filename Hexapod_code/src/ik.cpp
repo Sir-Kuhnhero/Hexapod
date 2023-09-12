@@ -20,10 +20,10 @@ void calcLegServoAngles(Leg_Struct &leg)
     float sinAlpha = sin((leg.mountAngle) * DEG_TO_RAD);
     float cosAlpha = cos((leg.mountAngle) * DEG_TO_RAD);
 
-    localCoordinates.x = cosAlpha * leg.targetPosition.x - sinAlpha * leg.targetPosition.y; // adjust for leg mounting rotation and zer0 position
+    localCoordinates.x = cosAlpha * leg.targetPosition.x + sinAlpha * leg.targetPosition.y; // adjust for leg mounting rotation and zer0 position
     localCoordinates.x += legZeroOffset.x;                                                  // adjust for zero position (otherwise the leg origion is (0,0,0))
 
-    localCoordinates.y = sinAlpha * leg.targetPosition.x + cosAlpha * leg.targetPosition.y;
+    localCoordinates.y = sinAlpha * leg.targetPosition.x - cosAlpha * leg.targetPosition.y; // we have to multiply by -1 to keep a right hand coordinat system
     localCoordinates.y += legZeroOffset.y;
 
     localCoordinates.z = leg.targetPosition.z + legZeroOffset.z;
