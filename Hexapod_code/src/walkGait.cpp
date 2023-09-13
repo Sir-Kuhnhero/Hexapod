@@ -9,6 +9,7 @@ int legLiftDistance = 25;
 float legLiftIncline = 2;
 
 Vector2 direction;
+float rotation;
 
 void setLegStateAtWalkInit();
 void setLegStateAtTargetReach(const Vector3 (&interpolatedTarget)[6]);
@@ -122,8 +123,13 @@ void standUp()
 
 void walkCycle()
 {
+    if (directionInput.magnitude() == 0 && rotationInput == 0)
+        return;
+
     // scale direction vector by passed time (mm per second)
-    direction = directionInput * (float(loopTime) / 1000.0f);
+    float deltaTime = (float(loopTime) / 1000.0f);
+    direction = directionInput * deltaTime;
+    rotation = rotationInput * deltaTime;
 
     // ######################################
     // ### set lifted & push leg at start ###
@@ -217,7 +223,7 @@ void setLegStateAtTargetReach(const Vector3 (&interpolatedTarget)[6])
 
     for (size_t i = 0; i < 6; i++)
     {
-        reachedTarget[i] = (interpolatedTarget[i] - Leg[i].curPosition).magnitude() < direction.magnitude() / 2;
+        reachedTarget[i] = (interpolatedTarget[i] - Leg[i].curPosition).magnitude() < (direction.magnitude() + fabs(rotation)) / 2;
     }
 
     // lifted and push has reached its target and now have to switch roles
@@ -238,7 +244,16 @@ void calcLegPath(Leg_Struct &leg)
     Vector2 projectionDirection;
     Vector2 projectionOrigion;
 
-    Vector2 rotaionProjection = Vector2::forward.rotate(leg.mountAngle + 90);
+    Vector2 rotaionProjection; // if there is no rotation input is is left as zero
+
+    if (rotation < 0)
+    {
+        rotaionProjection = (Vector2::forward).rotate(leg.mountAngle - 90);
+    }
+    else if (rotation > 0)
+    {
+        rotaionProjection = (Vector2::back).rotate(leg.mountAngle - 90);
+    }
 
     if (leg.lifted)
     {
@@ -323,7 +338,7 @@ void calcInterpolatedTarget(Vector3 (&interpolatedTarget)[6])
     }
 
     // calc substepLength
-    float subSteps = pathLength[findLongestPath(pathLength)] / direction.magnitude();
+    float subSteps = pathLength[findLongestPath(pathLength)] / (direction.magnitude() + fabs(rotation));
 
     for (size_t i = 0; i < 6; i++)
     {

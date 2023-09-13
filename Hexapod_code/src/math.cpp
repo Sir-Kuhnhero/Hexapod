@@ -258,7 +258,11 @@ bool Vector2::operator!=(const Vector2 &other) const
 // !! currently not working !! return a rotated vector (Read Only)
 Vector2 Vector2::rotate(const float &angle)
 {
-    Vector2 output(x * sin(angle * DEG_TO_RAD), y * cos(angle * DEG_TO_RAD));
+    Vector2 output;
+    float sinOfAngle = sin(angle * DEG_TO_RAD);
+    float cosOfAngle = cos(angle * DEG_TO_RAD);
+    output.x = x * cosOfAngle - y * sinOfAngle;
+    output.y = x * sinOfAngle + y * cosOfAngle;
 
     return output;
 }
