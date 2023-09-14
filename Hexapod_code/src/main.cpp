@@ -15,7 +15,7 @@ SoftwareSerial bluetoothSerial(rxPin, txPin);
 
 size_t indexOfCurDataByte = 0;
 bool readData = false;
-int data[7];
+int data[8] = {100, 100, 100, 100, 30, 30, 100};
 
 int ledPin = PC13; // LED connected to digital pin 13
 
@@ -103,7 +103,21 @@ void loop()
     }
   }
 
-  bluetoothSerial.println(loopTime);
+  // bluetoothSerial.println(loopTime);
+
+  // transfer received data to input Values for walking gait
+  int stickZero = 100;
+  int minValue = 20;
+
+  rotationInput = float(data[1] - stickZero) / float(stickZero - minValue) * data[5] * -1;
+
+  directionInput.x = float(data[4] - stickZero) / float(stickZero - minValue) * data[5];
+  directionInput.y = float(data[3] - stickZero) / float(stickZero - minValue) * data[5];
+
+  directionInput = directionInput.inverse();
+
+  groundClearance = data[6];
+  stepRadius = data[7];
 
   loopTime = millis() - curTime;
 }
