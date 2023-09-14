@@ -11,6 +11,8 @@
 // #define DEBUG_SERIAL
 // #define DEBUG_LED
 
+#define BLUETOOTH
+
 // ================================================================
 // ===                           math                           ===
 // ================================================================
@@ -98,6 +100,7 @@ extern Vector2 directionInput; // what direction and how fast (vector length) th
 extern float rotationInput;    // how much and fas should the hexapod rotate
 extern float groundClearance;  // how heigh of the groung is the hexapod walking
 extern float stepRadius;       // how long of a step can be taken taken
+extern float maxSpeed;         // maximum speed for leg movement
 
 // ================================================================
 // ===                          output                          ===
@@ -257,5 +260,24 @@ extern float legLiftIncline; // how steep the incline of leg ascent when lifting
 void standUp();
 
 void walkCycle();
+
+#endif
+
+// ================================================================
+// ===                         bluetooth                        ===
+// ================================================================
+
+#ifdef BLUETOOTH
+
+#define txBluetooth PA9
+#define rxBluetooth PA10
+
+#define DATA_LENGTH 8
+
+extern int Data[8];
+
+void Bluetooth_init();
+void Bluetooth_read();
+void Bluetooth_map();
 
 #endif

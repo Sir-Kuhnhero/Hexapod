@@ -7,23 +7,22 @@ Vector2 directionInput(0, 0);
 float rotationInput = 20;
 float groundClearance = 35;
 float stepRadius = 100;
-
-#define txPin PA9
-#define rxPin PA10 // only pins 10 & 11 work
-
-SoftwareSerial bluetoothSerial(rxPin, txPin);
-
-size_t indexOfCurDataByte = 0;
-bool readData = false;
-int data[8] = {100, 100, 100, 100, 30, 30, 100};
-
-int ledPin = PC13; // LED connected to digital pin 13
+float maxSpeed = 90;
 
 void setup()
 {
-  bluetoothSerial.begin(9600); // Default communication rate of the Bluetooth module
-  pinMode(PC13, OUTPUT);
-  digitalWrite(PC13, HIGH);
+#ifdef BLUETOOTH
+  Bluetooth_init();
+
+  // don't continue until a connection has been established and a array of data has been recived
+  while (Data[DATA_LENGTH - 1] == 0) // no data send can be 0
+  {
+    Bluetooth_read();
+    delay(1);
+  }
+
+  Bluetooth_map();
+#endif
 
 #ifdef WS2812B_LED // initialitze LEDs
   Led_init();
@@ -62,6 +61,13 @@ void setup()
 #endif
 
 #ifdef SERVO
+
+  while (Data[0] == 50) // is 50 when it should sit down and 100 when it should stand up
+  {
+    Bluetooth_read();
+    delay(1);
+  }
+
   standUp();
 #endif
 }
@@ -70,54 +76,15 @@ void loop()
 {
   int long curTime = millis();
 
+#ifdef BLUETOOTH
+  Bluetooth_read();
+  Bluetooth_map();
+#endif
+
 #ifdef SERVO
   walkCycle();
   Output_update();
 #endif
-
-  // Check if data is available from the Bluetooth module
-  if (bluetoothSerial.available())
-  {
-    if (!readData)
-    {
-      int value = bluetoothSerial.read();
-
-      if (value == 0)
-      {
-        readData = true;
-        indexOfCurDataByte = 0;
-        digitalWrite(PC13, LOW);
-      }
-    }
-    else
-    {
-      data[indexOfCurDataByte] = bluetoothSerial.read();
-
-      indexOfCurDataByte++;
-
-      if (indexOfCurDataByte >= int(sizeof(data) / sizeof(data[0])))
-      {
-        readData = false;
-        digitalWrite(PC13, HIGH);
-      }
-    }
-  }
-
-  // bluetoothSerial.println(loopTime);
-
-  // transfer received data to input Values for walking gait
-  int stickZero = 100;
-  int minValue = 20;
-
-  rotationInput = float(data[1] - stickZero) / float(stickZero - minValue) * data[5] * -1;
-
-  directionInput.x = float(data[4] - stickZero) / float(stickZero - minValue) * data[5];
-  directionInput.y = float(data[3] - stickZero) / float(stickZero - minValue) * data[5];
-
-  directionInput = directionInput.inverse();
-
-  groundClearance = data[6];
-  stepRadius = data[7];
 
   loopTime = millis() - curTime;
 }
