@@ -5,6 +5,8 @@
 // ===                         walkGait                         ===
 // ================================================================
 
+#ifdef SERVO
+
 int legLiftDistance = 25;
 float legLiftIncline = 2;
 
@@ -352,3 +354,5 @@ void calcInterpolatedTarget(Vector3 (&interpolatedTarget)[6])
         interpolatedTarget[i] = interpolatePathByLength(Leg[i].pointOnPath, substepLength[i]);
     }
 }
+
+#endif

@@ -1,14 +1,15 @@
 #include <Arduino.h>
 #include <Wire.h>
 #include <vector> // used for arrays with changing length
+#include <SoftwareSerial.h>
 
-#define WS2812B_LED
+// #define WS2812B_LED
 
-#define SERVO
+// #define SERVO
 
 #define DEBUG
 // #define DEBUG_SERIAL
-#define DEBUG_LED
+// #define DEBUG_LED
 
 // ================================================================
 // ===                           math                           ===

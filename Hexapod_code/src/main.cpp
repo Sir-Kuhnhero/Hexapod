@@ -8,8 +8,20 @@ float rotationInput = 20;
 float groundClearance = 35;
 float stepRadius = 100;
 
+size_t couldread = 0;
+
+#define txPin PA9
+#define rxPin PA10 // only pins 10 & 11 work
+
+SoftwareSerial bluetoothSerial(rxPin, txPin);
+
+int ledPin = PC13; // LED connected to digital pin 13
+
 void setup()
 {
+  bluetoothSerial.begin(9600); // Default communication rate of the Bluetooth module
+  pinMode(PC13, OUTPUT);
+  digitalWrite(PC13, HIGH);
 
 #ifdef WS2812B_LED // initialitze LEDs
   Led_init();
@@ -47,18 +59,43 @@ void setup()
 
 #endif
 
+#ifdef SERVO
   standUp();
+#endif
 }
 
 void loop()
 {
   int long curTime = millis();
 
+#ifdef SERVO
   walkCycle();
-
   Output_update();
+#endif
 
-  // delay(10);
+  // Check if data is available from the Bluetooth module
+  if (bluetoothSerial.available() > 0)
+  {
+
+    char state = bluetoothSerial.read(); // Reads the data from the bluetoothSerial port
+
+    bluetoothSerial.write(state);
+
+    // Serial.print("received: ");
+    // Serial.println(state);
+
+    couldread++;
+    digitalWrite(PC13, LOW);
+  }
+
+  // if (Serial.available())
+  //{
+  //   char state = Serial.read();
+  //   bluetoothSerial.write(state);
+  //   Serial.print(state);
+  // }
+
+  // Serial.print(float(loopTime));
 
   loopTime = millis() - curTime;
 }
