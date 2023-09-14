@@ -8,12 +8,14 @@ float rotationInput = 20;
 float groundClearance = 35;
 float stepRadius = 100;
 
-size_t couldread = 0;
-
 #define txPin PA9
 #define rxPin PA10 // only pins 10 & 11 work
 
 SoftwareSerial bluetoothSerial(rxPin, txPin);
+
+size_t indexOfCurDataByte = 0;
+bool readData = false;
+int data[7];
 
 int ledPin = PC13; // LED connected to digital pin 13
 
@@ -74,28 +76,34 @@ void loop()
 #endif
 
   // Check if data is available from the Bluetooth module
-  if (bluetoothSerial.available() > 0)
+  if (bluetoothSerial.available())
   {
+    if (!readData)
+    {
+      int value = bluetoothSerial.read();
 
-    char state = bluetoothSerial.read(); // Reads the data from the bluetoothSerial port
+      if (value == 0)
+      {
+        readData = true;
+        indexOfCurDataByte = 0;
+        digitalWrite(PC13, LOW);
+      }
+    }
+    else
+    {
+      data[indexOfCurDataByte] = bluetoothSerial.read();
 
-    bluetoothSerial.write(state);
+      indexOfCurDataByte++;
 
-    // Serial.print("received: ");
-    // Serial.println(state);
-
-    couldread++;
-    digitalWrite(PC13, LOW);
+      if (indexOfCurDataByte >= int(sizeof(data) / sizeof(data[0])))
+      {
+        readData = false;
+        digitalWrite(PC13, HIGH);
+      }
+    }
   }
 
-  // if (Serial.available())
-  //{
-  //   char state = Serial.read();
-  //   bluetoothSerial.write(state);
-  //   Serial.print(state);
-  // }
-
-  // Serial.print(float(loopTime));
+  bluetoothSerial.println(loopTime);
 
   loopTime = millis() - curTime;
 }
