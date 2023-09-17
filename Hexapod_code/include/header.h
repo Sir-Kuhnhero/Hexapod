@@ -3,15 +3,15 @@
 #include <vector> // used for arrays with changing length
 #include <SoftwareSerial.h>
 
-// #define WS2812B_LED
+#define WS2812B_LED
 
-#define SERVO
+// #define SERVO
 
 #define DEBUG
 // #define DEBUG_SERIAL
 // #define DEBUG_LED
 
-#define BLUETOOTH
+// #define BLUETOOTH
 
 // ================================================================
 // ===                           math                           ===
@@ -140,8 +140,11 @@ struct Leg_Struct
 extern Leg_Struct Leg[6];
 
 byte Servo_init();
-void Servo_update(const Servo_Struct &servo);
-void Servo_update(const int &servoCH, const int &angle);
+
+void Servo_update(const Servo_Struct &servo, const int &onValue = 0);
+void Servo_update(const int &servoCH, const int &angle, const int &onValue = 0);
+
+void Servo_deactivateAll();
 
 void Servo_moveAllToMinValue();
 void Servo_moveAllToMaxValue();
@@ -155,13 +158,17 @@ void Output_update();
 
 #include <FastLED.h>
 
-#define NUM_LEDS 271
+// #define NUM_LEDS 271
+#define NUM_LEDS 5
 
-#define DATA_PIN 3
+#define DATA_PIN 4
 
 byte Led_init();
 void Led_update(const int &LedID, const CRGB &color);
+
+#ifdef SERVO
 void LED_leg_animation(const int &legID, const int &aminationID, const float &level);
+#endif
 
 #pragma region ledNotes
 // 0:       Eye center
@@ -252,12 +259,22 @@ void calcLegServoAngles(Leg_Struct &leg);
 // ===                         walkGait                         ===
 // ================================================================
 
+enum State
+{
+    WALKING,
+    SITTING,
+    STANDING
+};
+
+extern State HexapodState;
+
 #ifdef SERVO
 
 extern int legLiftDistance;  // how high each step of the ground is
 extern float legLiftIncline; // how steep the incline of leg ascent when lifting is (when moving forward)
 
 void standUp();
+void sitDown();
 
 void walkCycle();
 

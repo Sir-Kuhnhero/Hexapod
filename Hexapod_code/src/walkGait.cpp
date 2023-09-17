@@ -23,6 +23,11 @@ void calcInterpolatedTarget(Vector3 (&interpolatedTarget)[6]);
 // move Legs to start and stand up
 void standUp()
 {
+    if (HexapodState != State::SITTING)
+    {
+        return;
+    }
+
     // move up to start
     Vector3 startPosition(0.0f, 0.0f, 120.0f);
 
@@ -33,98 +38,31 @@ void standUp()
         delay(250);
     }
 
-    // slowly move legs down
-    Vector3 curPosition(startPosition.x, startPosition.y, startPosition.z);
+    HexapodState = State::STANDING;
+}
 
-    for (curPosition.z = startPosition.z; curPosition.z > 0; curPosition.z--)
+void sitDown()
+{
+    float initialGroundClearance = groundClearance;
+
+    directionInput = Vector2::zero;
+    rotation = 0;
+
+    loopTime = 10; // manually set looptime. It's a bit jank but it works
+
+    // slowly move legs upwards
+    for (size_t i = initialGroundClearance; i > -40; i--)
     {
-        for (int i = 0; i < 6; i++)
-        {
-            Leg[i].targetPosition = curPosition;
-        }
+        groundClearance = i;
 
+        walkCycle();
         Output_update();
-
-        delay(5);
+        delay(10);
     }
 
-    return;
+    Servo_deactivateAll();
 
-    // reposition legs to zero
-    startPosition = curPosition;
-    Vector3 liftPositio(curPosition.x / 2, curPosition.y, 50);
-    Vector3 downPosition;
-
-    int steps = 50;    // steps for interpolation
-    int timeDelta = 2; // tiem between steps
-
-#pragma region repositionLeg_0_2_4
-    for (int i = 0; i < steps; i++)
-    {
-        curPosition = Vector3::Lerp(startPosition, liftPositio, float(i) / float(steps));
-
-        Leg[0].targetPosition = curPosition;
-        Leg[2].targetPosition = curPosition;
-        Leg[4].targetPosition = curPosition;
-
-        Leg_update(0);
-        Leg_update(2);
-        Leg_update(4);
-
-        delay(timeDelta);
-    }
-
-    // move last 3 legs down
-    for (int i = 0; i < steps; i++)
-    {
-        curPosition = Vector3::Lerp(liftPositio, downPosition, float(i) / float(steps));
-
-        Leg[0].targetPosition = curPosition;
-        Leg[2].targetPosition = curPosition;
-        Leg[4].targetPosition = curPosition;
-
-        Leg_update(0);
-        Leg_update(2);
-        Leg_update(4);
-
-        delay(timeDelta);
-    }
-
-#pragma endregion
-
-#pragma region repositionLeg_1_3_5
-    for (int i = 0; i < steps; i++)
-    {
-        curPosition = Vector3::Lerp(startPosition, liftPositio, float(i) / float(steps));
-
-        Leg[1].targetPosition = curPosition;
-        Leg[3].targetPosition = curPosition;
-        Leg[5].targetPosition = curPosition;
-
-        Leg_update(1);
-        Leg_update(3);
-        Leg_update(5);
-
-        delay(timeDelta);
-    }
-
-    // move last 3 legs down
-    for (int i = 0; i < steps; i++)
-    {
-        curPosition = Vector3::Lerp(liftPositio, downPosition, float(i) / float(steps));
-
-        Leg[1].targetPosition = curPosition;
-        Leg[3].targetPosition = curPosition;
-        Leg[5].targetPosition = curPosition;
-
-        Leg_update(1);
-        Leg_update(3);
-        Leg_update(5);
-
-        delay(timeDelta);
-    }
-
-#pragma endregion
+    HexapodState = State::SITTING;
 }
 
 void walkCycle()
@@ -134,11 +72,20 @@ void walkCycle()
     direction = directionInput * deltaTime;
     rotation = rotationInput * deltaTime;
 
+    if ((direction.magnitude() > 0 || rotation != 0))
+    {
+        HexapodState = State::WALKING;
+    }
+    else
+    {
+        HexapodState = State::STANDING;
+    }
+
     // ######################################
     // ### set lifted & push leg at start ###
     // ######################################
 
-    if (!Leg[0].lifted && !Leg[1].lifted && (direction.magnitude() > 0 || rotation != 0)) // group 1 & 2 is not lifted -> start new walk cycle
+    if (!Leg[0].lifted && !Leg[1].lifted && HexapodState == State::WALKING) // group 1 & 2 is not lifted -> start new walk cycle
     {
         setLegStateAtWalkInit();
     }
@@ -252,7 +199,7 @@ void setLegStateAtTargetReach(const Vector3 (&interpolatedTarget)[6])
 Vector3 calcTarget(Leg_Struct &leg)
 {
     // return cur point (with tip on the ground) if there is no input
-    if (direction.magnitude() == 0 && rotation == 0)
+    if (HexapodState == State::STANDING)
     {
         Vector3 target = leg.curPosition;
         target.z = LENGTH_TIBIA - (groundClearance + 40);
@@ -364,13 +311,13 @@ void calcInterpolatedTarget(Vector3 (&interpolatedTarget)[6])
     }
 
     // calc substepLength
-    float movementMagniture = (direction.magnitude() + fabs(rotation));
-    if (movementMagniture == 0)
+    float movementMagnitude = (direction.magnitude() + fabs(rotation));
+    if (movementMagnitude == 0)
     {
-        movementMagniture = maxSpeed * deltaTime / 2; // slight bit of movement to get the legs back on the ground
+        movementMagnitude = maxSpeed * deltaTime / 2; // slight bit of movement to get the legs back on the ground
     }
 
-    float subSteps = pathLength[findLongestPath(pathLength)] / movementMagniture;
+    float subSteps = pathLength[findLongestPath(pathLength)] / movementMagnitude;
 
     for (size_t i = 0; i < 6; i++)
     {
