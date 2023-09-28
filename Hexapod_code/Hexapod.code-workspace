@@ -3,10 +3,6 @@
     {
       "name": "Hexapod_code",
       "path": "."
-    },
-    {
-      "name": "basic STM32",
-      "path": "../../../PlatformIO/Projects/basic STM32"
     }
   ],
   "settings": {

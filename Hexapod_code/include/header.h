@@ -5,13 +5,13 @@
 
 #define WS2812B_LED
 
-// #define SERVO
+#define SERVO
 
 #define DEBUG
 // #define DEBUG_SERIAL
 // #define DEBUG_LED
 
-// #define BLUETOOTH
+#define BLUETOOTH
 
 // ================================================================
 // ===                           math                           ===
@@ -65,7 +65,7 @@ public:
     Vector2 &operator=(const Vector2 &other);
     bool operator==(const Vector2 &other) const;
     bool operator!=(const Vector2 &other) const;
-    Vector2 rotate(const float &angle); // !! currently not working !! return a rotated vector (Read Only)
+    Vector2 rotate(const float &angle); // return a rotated vector (Read Only)
     Vector2 normalized() const;         // return a normalized vector (Read Only)
     float magnitude() const;            // return the length of the vector (Read Only)
     Vector2 inverse() const;            // return the inverse of the vector (Read Only)
@@ -101,6 +101,12 @@ extern float rotationInput;    // how much and fas should the hexapod rotate
 extern float groundClearance;  // how heigh of the groung is the hexapod walking
 extern float stepRadius;       // how long of a step can be taken taken
 extern float maxSpeed;         // maximum speed for leg movement
+
+extern int brightness; // brightness of all LEDs
+extern int colorR;     // main color of LEDs (Red)
+extern int colorG;     // main color of LEDs (Green)
+extern int colorB;     // main color of LEDs (Blue)
+extern bool ledUpdate; // true if the LEDs should be updated (only update if needed)
 
 // ================================================================
 // ===                          output                          ===
@@ -139,7 +145,7 @@ struct Leg_Struct
 
 extern Leg_Struct Leg[6];
 
-byte Servo_init();
+void Servo_init();
 
 void Servo_update(const Servo_Struct &servo, const int &onValue = 0);
 void Servo_update(const int &servoCH, const int &angle, const int &onValue = 0);
@@ -159,12 +165,12 @@ void Output_update();
 #include <FastLED.h>
 
 // #define NUM_LEDS 271
-#define NUM_LEDS 5
+#define NUM_LEDS 271
 
-#define DATA_PIN 4
+#define DATA_PIN 3
 
-byte Led_init();
-void Led_update(const int &LedID, const CRGB &color);
+void Led_init();
+void Led_update(const int &ledID); // uses colorR, colorG, colorB values
 
 #ifdef SERVO
 void LED_leg_animation(const int &legID, const int &aminationID, const float &level);
@@ -295,6 +301,7 @@ extern int Data[8];
 
 void Bluetooth_init();
 void Bluetooth_read();
+void Bluetooth_clear();
 void Bluetooth_map();
 
 #endif

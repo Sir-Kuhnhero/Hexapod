@@ -15,6 +15,7 @@ void Bluetooth_init()
     bluetoothSerial.begin(9600); // Default communication rate of the Bluetooth module
 }
 
+// read one Byte from Bluetooth module
 void Bluetooth_read()
 {
     // Check if data is available from the Bluetooth module
@@ -30,16 +31,27 @@ void Bluetooth_read()
         }
         else // we are in sync so we read the next byte
         {
-            Data[indexOfCurDataByte] = bluetoothSerial.read();
+            int data = bluetoothSerial.read();
 
-            indexOfCurDataByte++;
-
-            if (indexOfCurDataByte >= 8) // we have reached the end of the expected receive data
+            if (indexOfCurDataByte >= DATA_LENGTH || data == 0) // we have reached the end of the expected receive data
             {
                 readData = false;
                 indexOfCurDataByte = 0;
             }
+
+            Data[indexOfCurDataByte] = data;
+
+            indexOfCurDataByte++;
         }
+    }
+}
+
+// clear old Bluetooth  data
+void Bluetooth_clear()
+{
+    while (bluetoothSerial.available())
+    {
+        bluetoothSerial.read();
     }
 }
 
@@ -61,6 +73,17 @@ void Bluetooth_map()
 
     groundClearance = Data[6];
     stepRadius = Data[7];
+/*
+    if (brightness != int(Data[8]) || colorR != int(Data[9]) || colorG != int(Data[10]) || colorB != int(Data[11]))
+    {
+        ledUpdate = true;
+    }
+
+    brightness = int(Data[8]);
+    colorR = int(Data[9]);
+    colorG = int(Data[10]);
+    colorB = int(Data[11]);
+*/
 }
 
 #endif

@@ -1,6 +1,5 @@
 #include <Arduino.h>
 #include "header.h"
-// #include "math.cpp"
 
 // ================================================================
 // ===                          Servo                           ===
@@ -12,7 +11,7 @@ Adafruit_PWMServoDriver servoDriver_1 = Adafruit_PWMServoDriver(0x41);
 
 Leg_Struct Leg[6];
 
-byte Servo_init()
+void Servo_init()
 {
     servoDriver_0.begin();
     servoDriver_0.setOscillatorFrequency(27000000);
@@ -32,7 +31,7 @@ byte Servo_init()
     Leg[0].Servo[2].maxAngle = 160;
 
     Leg[0].Servo[0].angleOffset = 0;
-    Leg[0].Servo[1].angleOffset = -15;
+    Leg[0].Servo[1].angleOffset = -10;
     Leg[0].Servo[2].angleOffset = -5;
 
     Leg[0].mirrored = true;
@@ -144,8 +143,6 @@ byte Servo_init()
     }
 
 #pragma endregion
-
-    return 0b00000000;
 }
 
 void Servo_update(const Servo_Struct &servo, const int &onValue)
@@ -250,25 +247,25 @@ void Output_update()
 
 CRGB leds[NUM_LEDS];
 
-byte Led_init()
+void Led_init()
 {
     FastLED.addLeds<WS2812B, DATA_PIN, RGB>(leds, NUM_LEDS); // GRB ordering is typical
 
-    FastLED.setBrightness(3);
+    FastLED.setBrightness(brightness);
 
     // turn all led off
-    for (size_t i = 0; i < NUM_LEDS + 1; i++)
+    for (size_t i = 0; i < NUM_LEDS; i++)
     {
-        leds[i] = CRGB::Green;
+        leds[i] = CRGB::Black;
     }
     FastLED.show();
-
-    return 0b00000000;
 }
 
-void Led_update(const int &ledID, const CRGB &color)
+void Led_update(const int &ledID)
 {
-    leds[ledID] = color;
+    //leds[ledID] = CRGB::Red;
+    
+    leds[ledID] = CRGB(uint8_t(colorR), uint8_t(colorG), uint8_t(colorB));
 }
 
 #ifdef SERVO
@@ -286,9 +283,9 @@ void LED_leg_animation(const int &legID, const int &aminationID, const float &le
         for (int i = 0; i < Leg[legID].maxLED - Leg[legID].minLED + 1; i++)
         {
             if (i < LEDsOn)
-                Led_update(Leg[legID].minLED + i, CRGB::Blue);
+                Led_update(Leg[legID].minLED + i);
             else
-                Led_update(Leg[legID].minLED + i, CRGB::Black);
+                Led_update(Leg[legID].minLED + i);
         }
         break;
 
@@ -297,9 +294,9 @@ void LED_leg_animation(const int &legID, const int &aminationID, const float &le
         for (int i = Leg[legID].maxLED - Leg[legID].minLED + 1; i > 0; i--)
         {
             if (i < LEDsOn)
-                Led_update(Leg[legID].maxLED - i, CRGB::Blue);
+                Led_update(Leg[legID].maxLED - i);
             else
-                Led_update(Leg[legID].maxLED - i, CRGB::Black);
+                Led_update(Leg[legID].maxLED - i);
         }
         break;
 

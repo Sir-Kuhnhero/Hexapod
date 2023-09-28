@@ -11,6 +11,12 @@ float maxSpeed = 90;
 
 State HexapodState = State::SITTING;
 
+int brightness = 3;
+int colorR = 0;
+int colorG = 0;
+int colorB = 255;
+bool ledUpdate = false;
+
 void setup()
 {
 #ifdef BLUETOOTH
@@ -37,7 +43,7 @@ void setup()
 #ifdef WS2812B_LED // startup LED animation
   for (size_t i = 0; i < 25; i++)
   {
-    Led_update(i, CRGB::Blue);
+    Led_update(i);
     FastLED.show();
     delay(25);
   }
@@ -59,10 +65,13 @@ void setup()
 
 #ifdef SERVO
 
+  Bluetooth_clear();
+  Data[0] = 50;
+
   while (Data[0] == 50) // is 50 when it should sit down and 100 when it should stand up
   {
     Bluetooth_read();
-    delay(1);
+    delay(10);
   }
 
   standUp();
@@ -97,6 +106,27 @@ void loop()
     walkCycle();
     Output_update();
   }
+#endif
+
+#ifdef WS2812B_LED
+
+  if (!ledUpdate)
+  {
+
+    for (size_t i = 0; i < NUM_LEDS; i++)
+    {
+      Led_update(i);
+    }
+
+    FastLED.setBrightness(brightness);
+    FastLED.show();
+
+    ledUpdate = true;
+
+    Bluetooth_clear(); // updating every led takes time
+    curTime = millis();
+  }
+
 #endif
 
   loopTime = millis() - curTime;

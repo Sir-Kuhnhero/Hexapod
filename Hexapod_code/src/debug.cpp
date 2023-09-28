@@ -68,12 +68,12 @@ void Debug_Led_8bit(const int8_t &error_code)
         if ((error_code & (1 << bitPosition)))
         {
             // Bit is 1
-            Led_update(bitPosition + 1, CRGB::Blue);
+            Led_update(bitPosition + 1);
         }
         else
         {
             // Bit is 0
-            Led_update(bitPosition + 1, CRGB::Black);
+            Led_update(bitPosition + 1);
         }
     }
 
@@ -85,13 +85,13 @@ void Debug_Led_16bit(int16_t error_code)
 {
     if (error_code < 0)
     {
-        Led_update(0, CRGB::Blue);
+        Led_update(0);
 
         error_code *= -1;
     }
     else
     {
-        Led_update(0, CRGB::Black);
+        Led_update(0);
     }
 
     for (int bitPosition = 0; bitPosition < 16; ++bitPosition)
@@ -100,12 +100,12 @@ void Debug_Led_16bit(int16_t error_code)
         if ((error_code & (1 << bitPosition)))
         {
             // Bit is 1
-            Led_update(bitPosition + 9, CRGB::Blue);
+            Led_update(bitPosition + 9);
         }
         else
         {
             // Bit is 0
-            Led_update(bitPosition + 9, CRGB::Black);
+            Led_update(bitPosition + 9);
         }
     }
 
