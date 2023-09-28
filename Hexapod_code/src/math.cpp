@@ -459,9 +459,6 @@ Vector3 interpolatePathByLength(const std::vector<Vector3> &path, float targetLe
 
         currentLength += segmentLength;
     }
-
-    Debug_Led_8bit(0b10101010);
-    delay(1000);
     return interpolatedPath;
 }
 

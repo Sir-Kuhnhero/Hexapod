@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <Wire.h>
 #include <vector> // used for arrays with changing length
+#include <SoftwareSerial.h>
 
 #define WS2812B_LED
 
@@ -8,7 +9,9 @@
 
 #define DEBUG
 // #define DEBUG_SERIAL
-#define DEBUG_LED
+// #define DEBUG_LED
+
+#define BLUETOOTH
 
 // ================================================================
 // ===                           math                           ===
@@ -62,7 +65,7 @@ public:
     Vector2 &operator=(const Vector2 &other);
     bool operator==(const Vector2 &other) const;
     bool operator!=(const Vector2 &other) const;
-    Vector2 rotate(const float &angle); // !! currently not working !! return a rotated vector (Read Only)
+    Vector2 rotate(const float &angle); // return a rotated vector (Read Only)
     Vector2 normalized() const;         // return a normalized vector (Read Only)
     float magnitude() const;            // return the length of the vector (Read Only)
     Vector2 inverse() const;            // return the inverse of the vector (Read Only)
@@ -97,6 +100,13 @@ extern Vector2 directionInput; // what direction and how fast (vector length) th
 extern float rotationInput;    // how much and fas should the hexapod rotate
 extern float groundClearance;  // how heigh of the groung is the hexapod walking
 extern float stepRadius;       // how long of a step can be taken taken
+extern float maxSpeed;         // maximum speed for leg movement
+
+extern int brightness; // brightness of all LEDs
+extern int colorR;     // main color of LEDs (Red)
+extern int colorG;     // main color of LEDs (Green)
+extern int colorB;     // main color of LEDs (Blue)
+extern bool ledUpdate; // true if the LEDs should be updated (only update if needed)
 
 // ================================================================
 // ===                          output                          ===
@@ -135,9 +145,12 @@ struct Leg_Struct
 
 extern Leg_Struct Leg[6];
 
-byte Servo_init();
-void Servo_update(const Servo_Struct &servo);
-void Servo_update(const int &servoCH, const int &angle);
+void Servo_init();
+
+void Servo_update(const Servo_Struct &servo, const int &onValue = 0);
+void Servo_update(const int &servoCH, const int &angle, const int &onValue = 0);
+
+void Servo_deactivateAll();
 
 void Servo_moveAllToMinValue();
 void Servo_moveAllToMaxValue();
@@ -151,13 +164,17 @@ void Output_update();
 
 #include <FastLED.h>
 
+// #define NUM_LEDS 271
 #define NUM_LEDS 271
 
 #define DATA_PIN 3
 
-byte Led_init();
-void Led_update(const int &LedID, const CRGB &color);
+void Led_init();
+void Led_update(const int &ledID); // uses colorR, colorG, colorB values
+
+#ifdef SERVO
 void LED_leg_animation(const int &legID, const int &aminationID, const float &level);
+#endif
 
 #pragma region ledNotes
 // 0:       Eye center
@@ -248,13 +265,43 @@ void calcLegServoAngles(Leg_Struct &leg);
 // ===                         walkGait                         ===
 // ================================================================
 
+enum State
+{
+    WALKING,
+    SITTING,
+    STANDING
+};
+
+extern State HexapodState;
+
 #ifdef SERVO
 
 extern int legLiftDistance;  // how high each step of the ground is
 extern float legLiftIncline; // how steep the incline of leg ascent when lifting is (when moving forward)
 
 void standUp();
+void sitDown();
 
 void walkCycle();
+
+#endif
+
+// ================================================================
+// ===                         bluetooth                        ===
+// ================================================================
+
+#ifdef BLUETOOTH
+
+#define txBluetooth PA9
+#define rxBluetooth PA10
+
+#define DATA_LENGTH 8
+
+extern int Data[8];
+
+void Bluetooth_init();
+void Bluetooth_read();
+void Bluetooth_clear();
+void Bluetooth_map();
 
 #endif
