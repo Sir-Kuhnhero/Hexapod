@@ -263,9 +263,12 @@ void Led_init()
 
 void Led_update(const int &ledID)
 {
-    //leds[ledID] = CRGB::Red;
-    
     leds[ledID] = CRGB(uint8_t(colorR), uint8_t(colorG), uint8_t(colorB));
+}
+
+void Led_update(const int &ledID, CRGB color)
+{
+    leds[ledID] = color;
 }
 
 #ifdef SERVO
@@ -285,7 +288,7 @@ void LED_leg_animation(const int &legID, const int &aminationID, const float &le
             if (i < LEDsOn)
                 Led_update(Leg[legID].minLED + i);
             else
-                Led_update(Leg[legID].minLED + i);
+                Led_update(Leg[legID].minLED + i, CRGB::Black);
         }
         break;
 
@@ -296,7 +299,7 @@ void LED_leg_animation(const int &legID, const int &aminationID, const float &le
             if (i < LEDsOn)
                 Led_update(Leg[legID].maxLED - i);
             else
-                Led_update(Leg[legID].maxLED - i);
+                Led_update(Leg[legID].maxLED - i, CRGB::Black);
         }
         break;
 

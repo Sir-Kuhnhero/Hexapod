@@ -468,7 +468,7 @@ Vector2 projectPointToCircle(const float &radius, const Vector2 &point, Vector2 
     // no direction for projection -> no calculation
     if (direction.magnitude() == 0)
         return point;
-    // start bein (0, 0) or haveing the same direction as directionInput makes the calculation very simple
+    // start being (0, 0) or having the same direction as directionInput makes the calculation very simple
     if (point.magnitude() == 0 || point.normalized() == direction.normalized() || point.normalized() * -1 == direction.normalized())
         return direction.normalized() * radius;
 

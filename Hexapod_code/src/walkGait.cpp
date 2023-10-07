@@ -311,7 +311,7 @@ void calcInterpolatedTarget(Vector3 (&interpolatedTarget)[6])
     }
 
     // calc substepLength
-    float movementMagnitude = (direction.magnitude() + fabs(rotation));
+    float movementMagnitude = direction.magnitude() + fabs(rotation);
     if (movementMagnitude == 0)
     {
         movementMagnitude = maxSpeed * deltaTime / 2; // slight bit of movement to get the legs back on the ground
