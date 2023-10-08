@@ -3,6 +3,10 @@
     {
       "name": "Hexapod_code",
       "path": "."
+    },
+    {
+      "name": "test 2",
+      "path": "../../../PlatformIO/Projects/test 2"
     }
   ],
   "settings": {
