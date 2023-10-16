@@ -1,4 +1,4 @@
-# Hexapod #
+# Overview #
 
 Seems like you want to build a Hexapod. Don't know why but since you're here, might as well tell you about the most important features about my design:
 
@@ -9,7 +9,9 @@ Seems like you want to build a Hexapod. Don't know why but since you're here, mi
 5. Bluetooth control: Remote control via phone app
 
 If this hasn't convinced you might I suggest watching my videos on the design and build.
+
 Leg: https://youtu.be/Ta3ILBvA57U
+
 Body & first Steps: https://youtu.be/FBk1Pa01zQ4
 
 # Build #
