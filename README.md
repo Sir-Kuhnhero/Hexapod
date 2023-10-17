@@ -16,9 +16,9 @@ Body & first Steps: https://youtu.be/FBk1Pa01zQ4
 
 # Build #
 
-Since you are reading this I assume you are at least considering my design. I have some instructions on Instucatbles if you want to take a look at that:
+Since you are reading this I assume you are at least considering my design. I have some instructions on Instucatbles if you want to take a look at that: https://www.instructables.com/3D-Printed-Hexapod/
 
-You can also find all the most important files on Printables: 
+You can also find all the most important files on Printables: https://www.printables.com/model/606030-3d-printed-hexapod
 
 All the 3mf files are oriented correctly with the needed support material. My parts are design in a way that uses minimal support material. See “Parts (toPrint)” Excel sheet.
 
@@ -41,6 +41,44 @@ The LEDs are all connected in series in this order: Eye Centre, Eye middle ring,
 For the servos you can connect them to wherever is easiest. However you will need to set the channel for each servo in the "output.cpp" file correctly.
 
 On that node ensure that you bridge the first solder pad on one of the servo drivers. This will ensure that it uses a different I2C address. This second driver will continue the channel numbering of the first (16-31).
+
+# Programming #
+
+The code has been written in Visual Studio Code with the platform IO extension.
+
+ 
+
+To Upload it make sure you have both installed and add the folder bellow as a project.
+
+ 
+
+From here upload the code. Be sure to use an ST-Link for this. You can use a simple FTDI Programmer or something similar but you will have to unplug the Bluetooth module to connect it and change the "upload_protocol" in the platformio.ini file from "stlink" to what your programmer requires. Check here for more info.
+
+```
+[env:genericSTM32F103C8]
+platform = ststm32
+board = genericSTM32F103C8
+framework = arduino
+debug_tool = stlink
+upload_protocol = stlink
+lib_deps = 
+  adafruit/Adafruit PWM Servo Driver Library@^2.4.1
+  fastled/FastLED@^3.6.0
+ ```
+
+If you want to deactivate some functions, for example the LEDs, for some reason you can do that in the "header.h" file by commenting out what you don’t want. This can be great for testing new features.
+
+```
+#define WS2812B_LED
+ 
+#define SERVO
+ 
+#define DEBUG
+// #define DEBUG_SERIAL
+#define DEBUG_LED
+ 
+#define BLUETOOTH
+```
 
 # Issues #
 
