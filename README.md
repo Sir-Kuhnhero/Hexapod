@@ -16,7 +16,9 @@ Body & first Steps: https://youtu.be/FBk1Pa01zQ4
 
 # Build #
 
-Since you are reading this I assume you are at least considering my design. I have some instructions on Instucatbles if you want to take a look at that: https://www.instructables.com/3D-Printed-Hexapod/
+Since you are reading this I assume you are at least considering my design. I have some instructions on Instucatbles and Hackster.io if you want to take a look at that.
+Instructables: https://www.instructables.com/3D-Printed-Hexapod/
+Hackster.io: https://www.hackster.io/sir-kuhnhero/3d-printed-hexapod-05a60c
 
 You can also find all the most important files on Printables: https://www.printables.com/model/606030-3d-printed-hexapod
 
