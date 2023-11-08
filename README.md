@@ -1,3 +1,6 @@
+Due to bandwidth limitations I was forced to remove some files. If you can't download some of the larger files, go to Printables. You should find the most important files there.
+Printables: https://www.printables.com/model/606030-3d-printed-hexapod
+
 # Overview #
 
 Seems like you want to build a Hexapod. Don't know why but since you're here, might as well tell you about the most important features about my design:
