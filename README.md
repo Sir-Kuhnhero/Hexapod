@@ -45,6 +45,38 @@ The LEDs are all connected in series in this order: Eye Centre, Eye middle ring,
 
 For the servos you can connect them to wherever is easiest. However you will need to set the channel for each servo in the "output.cpp" file correctly.
 
+```
+Leg[0].Servo[0].ch = 2;
+Leg[0].Servo[1].ch = 1;
+Leg[0].Servo[2].ch = 0;
+
+Leg[1].Servo[0].ch = 6;
+Leg[1].Servo[1].ch = 5;
+Leg[1].Servo[2].ch = 4;
+
+Leg[2].Servo[0].ch = 13;
+Leg[2].Servo[1].ch = 14;
+Leg[2].Servo[2].ch = 15;
+
+Leg[3].Servo[0].ch = 18;
+Leg[3].Servo[1].ch = 17;
+Leg[3].Servo[2].ch = 16;
+
+Leg[4].Servo[0].ch = 25;
+Leg[4].Servo[1].ch = 26;
+Leg[4].Servo[2].ch = 27;
+
+Leg[5].Servo[0].ch = 29;
+Leg[5].Servo[1].ch = 30;
+Leg[5].Servo[2].ch = 31;
+```
+
+The Leg naming is as followes:
+
+![alt text](https://github.com/Sir-Kuhnhero/Hexapod/blob/main/Leg%20Configuration.png?raw=true)
+
+![alt text](https://github.com/Sir-Kuhnhero/Hexapod/blob/main/Servo%20Leg%20Configutarion.png?raw=true)
+
 On that node ensure that you bridge the first solder pad on one of the servo drivers. This will ensure that it uses a different I2C address. This second driver will continue the channel numbering of the first (16-31).
 
 # Programming #
