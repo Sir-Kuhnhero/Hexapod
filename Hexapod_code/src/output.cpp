@@ -22,6 +22,8 @@ void Servo_init()
     servoDriver_1.setPWMFreq(SERVO_FREQ); // Analog servos run at ~50 Hz updates
 
 #pragma region configureServos
+
+// for correct Servo Placenment check the Leg Configuration and Servo Leg Configuration Images
 #pragma region Leg_0
     Leg[0].Servo[0].ch = 2;
     Leg[0].Servo[1].ch = 1;
