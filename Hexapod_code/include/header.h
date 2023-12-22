@@ -6,7 +6,7 @@
 #define WS2812B_LED
 
 #define SERVO
-#define SERVO_CALIBRATION
+//#define SERVO_CALIBRATION
 
 #define DEBUG
 // #define DEBUG_SERIAL

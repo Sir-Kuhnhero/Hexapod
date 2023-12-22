@@ -89,7 +89,7 @@ To Upload it make sure you have both installed and add the folder bellow as a pr
 
  
 
-From here upload the code. Be sure to use an ST-Link for this. You can use a simple FTDI Programmer or something similar but you will have to unplug the Bluetooth module to connect it and change the "upload_protocol" in the platformio.ini file from "stlink" to what your programmer requires. Check here for more info.
+From here upload the code. Be sure to use an ST-Link for this. You can use a simple FTDI Programmer or something similar but you will have to unplug the Bluetooth module to connect it and change the "upload_protocol" in the platformio.ini file from "stlink" to what your programmer requires. Check [here](https://docs.platformio.org/en/latest/boards/ststm32/genericSTM32F103C8.html#board-ststm32-genericstm32f103c8) for more info.
 
 ```
 [env:genericSTM32F103C8]
@@ -103,19 +103,55 @@ lib_deps =
   fastled/FastLED@^3.6.0
  ```
 
+I had some issues with my ST-Link a while ago and had to switch to an FTDI programmer. This ended up looking like this:
+
+```
+[env:genericSTM32F103C8]
+platform = ststm32
+board = genericSTM32F103C8
+framework = arduino
+upload_protocol = serial
+lib_deps = 
+  adafruit/Adafruit PWM Servo Driver Library@^2.4.1
+  fastled/FastLED@^3.6.0
+ ```
+
+
 If you want to deactivate some functions, for example the LEDs, for some reason you can do that in the "header.h" file by commenting out what you don’t want. This can be great for testing new features.
 
 ```
 #define WS2812B_LED
- 
+
 #define SERVO
- 
+//#define SERVO_CALIBRATION
+
 #define DEBUG
 // #define DEBUG_SERIAL
-#define DEBUG_LED
- 
+// #define DEBUG_LED
+
 #define BLUETOOTH
 ```
+
+You will also need to fine tune the servo angles by setting the angleOffset for each servo in the output.cpp file. When you habe set your values correctly it should look something like this:
+
+![alt text](https://github.com/Sir-Kuhnhero/Hexapod/blob/main/Calibration%20Leg_side%20view.jpg?raw=true)
+
+![alt text](https://github.com/Sir-Kuhnhero/Hexapod/blob/main/Calibration%20Leg_top%20view.jpg?raw=true)
+
+
+# Install Remote App & Connecting #
+
+If you install the application you will get a message saying this might be dangerous to install. This is normal so don't worry. If you don't trust me take a look at the MIT App Inventor project files and compile it yourself.
+
+Once installed make sure to allow "Nearby Devices". This is required for the app to find available Bluetooth devices.
+
+Note that there are slider for controlling the Hexapods LEDs but that is currently disabled to reduce latency.
+
+Turn your Hexapod on and pair to the Bluetooth module in you phones Bluetooth settings (only do this once). The default password is 1234 or 0000.
+
+Now open the Hexapod Remote app and connect to the Bluetooth module. Once connected the Hexapod will have a simple startup animation and now you can control the hexapod using the two sticks.
+
+Note that if you have changed something with #define at the beginning of header.h this behaviour might be different.
 
 # Issues #
 
