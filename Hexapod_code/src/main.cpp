@@ -47,7 +47,7 @@ void setup()
     FastLED.show();
     delay(25);
   }
-  
+
 #ifdef SERVO
   for (int i = 0; i < 100; i++)
   {
@@ -78,7 +78,9 @@ void setup()
 #endif
 #endif
 
-HexapodState = State::STANDING;
+#ifdef SERVO_CALIBRATION
+  HexapodState = State::STANDING;
+#endif
 }
 
 void loop()
