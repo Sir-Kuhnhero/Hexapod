@@ -1,6 +1,8 @@
 #include <Arduino.h>
 #include <header.h>
 
+int Data[8];
+
 #ifdef BLUETOOTH
 
 SoftwareSerial bluetoothSerial(rxBluetooth, txBluetooth);
@@ -8,7 +10,6 @@ SoftwareSerial bluetoothSerial(rxBluetooth, txBluetooth);
 size_t indexOfCurDataByte = 0;
 bool readData = false;
 
-int Data[8];
 
 void Bluetooth_init()
 {

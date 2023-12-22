@@ -47,7 +47,7 @@ void setup()
     FastLED.show();
     delay(25);
   }
-
+  
 #ifdef SERVO
   for (int i = 0; i < 100; i++)
   {
@@ -64,7 +64,7 @@ void setup()
 #endif
 
 #ifdef SERVO
-
+#ifdef BLUETOOTH
   Bluetooth_clear();
   Data[0] = 50;
 
@@ -76,6 +76,9 @@ void setup()
 
   standUp();
 #endif
+#endif
+
+HexapodState = State::STANDING;
 }
 
 void loop()
@@ -123,7 +126,9 @@ void loop()
 
     ledUpdate = true;
 
+#ifdef BLUETOOTH
     Bluetooth_clear(); // updating every led takes time
+#endif
     curTime = millis();
   }
 

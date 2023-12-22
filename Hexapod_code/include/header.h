@@ -6,12 +6,20 @@
 #define WS2812B_LED
 
 #define SERVO
+#define SERVO_CALIBRATION
 
 #define DEBUG
 // #define DEBUG_SERIAL
 // #define DEBUG_LED
 
 #define BLUETOOTH
+
+
+
+// undefine thinkgs to avoid conflicts
+#ifdef SERVO_CALIBRATION
+#undef BLUETOOTH
+#endif
 
 // ================================================================
 // ===                           math                           ===
@@ -290,6 +298,8 @@ void walkCycle();
 // ===                         bluetooth                        ===
 // ================================================================
 
+extern int Data[8];
+
 #ifdef BLUETOOTH
 
 #define txBluetooth PA9
@@ -297,7 +307,6 @@ void walkCycle();
 
 #define DATA_LENGTH 8
 
-extern int Data[8];
 
 void Bluetooth_init();
 void Bluetooth_read();

@@ -67,6 +67,21 @@ void sitDown()
 
 void walkCycle()
 {
+    #ifdef SERVO_CALIBRATION
+    for (size_t i = 0; i < 6; i++)
+    {
+        Vector3 newPosition;
+        //set new position to 0 for each axis
+        newPosition.x = 0;
+        newPosition.y = 0;
+        newPosition.z = 0;
+
+        Leg[i].targetPosition = newPosition;
+    }
+
+    return;
+    #endif
+
     // scale direction vector by passed time (mm per second)
     deltaTime = (float(loopTime) / 1000.0f);
     direction = directionInput * deltaTime;
