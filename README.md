@@ -132,7 +132,7 @@ If you want to deactivate some functions, for example the LEDs, for some reason 
 #define BLUETOOTH
 ```
 
-You will also need to fine tune the servo angles by setting the angleOffset for each servo in the output.cpp file. When you habe set your values correctly it should look something like this:
+You will also need to fine tune the servo angles by setting the angleOffset for each servo in the output.cpp file. If you set your values correctly it should look something like this. To make this easier you can uncomment "#define SERVO_CALIBRATION" in the "header.h" file. This will move every leg to it's origin.
 
 ![alt text](https://github.com/Sir-Kuhnhero/Hexapod/blob/main/Calibration%20Leg_side%20view.jpg?raw=true)
 
