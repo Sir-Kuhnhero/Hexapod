@@ -3,18 +3,16 @@
 #include <vector> // used for arrays with changing length
 #include <SoftwareSerial.h>
 
-#define WS2812B_LED
+// #define WS2812B_LED
 
 #define SERVO
-//#define SERVO_CALIBRATION
+// #define SERVO_CALIBRATION
 
 #define DEBUG
 // #define DEBUG_SERIAL
 // #define DEBUG_LED
 
 #define BLUETOOTH
-
-
 
 // undefine thinkgs to avoid conflicts
 #ifdef SERVO_CALIBRATION
@@ -110,12 +108,6 @@ extern float groundClearance;  // how heigh of the groung is the hexapod walking
 extern float stepRadius;       // how long of a step can be taken taken
 extern float maxSpeed;         // maximum speed for leg movement
 
-extern int brightness; // brightness of all LEDs
-extern int colorR;     // main color of LEDs (Red)
-extern int colorG;     // main color of LEDs (Green)
-extern int colorB;     // main color of LEDs (Blue)
-extern bool ledUpdate; // true if the LEDs should be updated (only update if needed)
-
 // ================================================================
 // ===                          output                          ===
 // ================================================================
@@ -168,7 +160,14 @@ void Output_update();
 
 #endif
 
+
 #ifdef WS2812B_LED
+
+extern int brightness; // brightness of all LEDs
+extern int colorR;     // main color of LEDs (Red)
+extern int colorG;     // main color of LEDs (Green)
+extern int colorB;     // main color of LEDs (Blue)
+extern bool ledUpdate; // true if the LEDs should be updated (only update if needed)
 
 #include <FastLED.h>
 
@@ -176,6 +175,9 @@ void Output_update();
 #define NUM_LEDS 271
 
 #define DATA_PIN 3
+
+#define continuesUpdate false // this continuesly updates the LEDs (slow) but allows for animations
+#define updateInterval 100    // update interval for continuesUpdate
 
 void Led_init();
 void Led_update(const int &ledID); // uses colorR, colorG, colorB values
@@ -298,15 +300,14 @@ void walkCycle();
 // ===                         bluetooth                        ===
 // ================================================================
 
-extern int Data[8];
+extern int Data[11];
 
 #ifdef BLUETOOTH
 
 #define txBluetooth PA9
 #define rxBluetooth PA10
 
-#define DATA_LENGTH 8
-
+#define DATA_LENGTH 11 // the amount of Bytes send (excluding the 0 at the beginning)
 
 void Bluetooth_init();
 void Bluetooth_read();

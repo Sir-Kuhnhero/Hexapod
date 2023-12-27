@@ -1,3 +1,4 @@
 {
-    "cmake.sourceDirectory": "C:/Users/Robin/Documents/Github/Hexapod/Hexapod_code/.pio/libdeps/genericSTM32F103C8/FastLED"
+    "cmake.sourceDirectory": "C:/Users/Robin/Documents/Github/Hexapod/Hexapod_code/.pio/libdeps/genericSTM32F103C8/FastLED",
+    "cmake.configureOnOpen": false
 }
