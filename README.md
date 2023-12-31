@@ -37,9 +37,9 @@ If I didn't buy it or the link doesn't work anymore I linked to where I would bu
 
 ![alt text](https://github.com/Sir-Kuhnhero/Hexapod/blob/main/Wiring%20Diagram%204K.png?raw=true)
 
-Connect everything like in the wiring diagram above. Be sure to use shielded wire for the connection between the STM32 and the servo drivers. I had some problems with interference without it.
+Connect everything like in the wiring diagram above. You will see where to place te servo drivers in an image bellow. Be sure to use shielded wire for the connection between the STM32 and the servo drivers. I had some problems with interference without it.
 
-One thing missing here is the XT60 connection between the battery and the rest of the circuit. You need a way to shut the hexapod down.
+One thing missing here is the XT60 connection between the battery and the rest of the circuit. You need a way to shut the hexapod down and recharge the battery.
 
 The LEDs are all connected in series in this order: Eye Centre, Eye middle ring, Eye outer ring, bottom ring, leg[ (front right) root -> tip (proceeding clockwise)
 
@@ -73,9 +73,9 @@ Leg[5].Servo[2].ch = 31;
 
 The Leg naming is as followes:
 
-![alt text](https://github.com/Sir-Kuhnhero/Hexapod/blob/main/Leg%20Configuration.png?raw=true)
+![alt text](https://github.com/Sir-Kuhnhero/Hexapod/blob/main/Leg%20naming%20&driver%20placement.png?raw=true)
 
-![alt text](https://github.com/Sir-Kuhnhero/Hexapod/blob/main/Servo%20Leg%20Configutarion.png?raw=true)
+![alt text](https://github.com/Sir-Kuhnhero/Hexapod/blob/main/servo%20placement.png?raw=true)
 
 On that node ensure that you bridge the first solder pad on one of the servo drivers. This will ensure that it uses a different I2C address. This second driver will continue the channel numbering of the first (16-31).
 

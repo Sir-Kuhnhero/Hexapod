@@ -3,6 +3,9 @@
     {
       "name": "Hexapod_code",
       "path": "."
+    },
+    {
+      "path": ".."
     }
   ],
   "settings": {
