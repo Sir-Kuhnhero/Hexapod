@@ -35,7 +35,7 @@ If I didn't buy it or the link doesn't work anymore I linked to where I would bu
 
 # Wiring #
 
-![alt text](https://github.com/Sir-Kuhnhero/Hexapod/blob/main/Wiring%20Diagram%204K.png?raw=true)
+![alt text](https://github.com/Sir-Kuhnhero/Hexapod/blob/main/Wiring%20Diagram%204K.jpg?raw=true)
 
 Connect everything like in the wiring diagram above. You will see where to place te servo drivers in an image bellow. Be sure to use shielded wire for the connection between the STM32 and the servo drivers. I had some problems with interference without it.
 
