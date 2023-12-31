@@ -11,11 +11,14 @@ float maxSpeed = 90;
 
 State HexapodState = State::SITTING;
 
-int brightness = 3;
+#ifdef WS2812B_LED
+int ledUpdateTimer = 0;
+int brightness = 5;
 int colorR = 0;
 int colorG = 0;
 int colorB = 255;
-bool ledUpdate = false;
+bool ledUpdate = true;
+#endif
 
 void setup()
 {
@@ -114,8 +117,28 @@ void loop()
 #endif
 
 #ifdef WS2812B_LED
+  // ping pong led blue color
+  /*
+    if (colorBDirection == 0)
+    {
+      colorB--;
+    }
+    else if (colorBDirection == 1)
+    {
+      colorB++;
+    }
 
-  if (!ledUpdate)
+    if (colorB == 0)
+    {
+      colorBDirection = 1;
+    }
+    else if (colorB == 255)
+    {
+      colorBDirection = 0;
+    }
+  */
+
+  if (ledUpdate || (ledUpdateTimer > updateInterval && continuesUpdate))
   {
 
     for (size_t i = 0; i < NUM_LEDS; i++)
@@ -126,14 +149,16 @@ void loop()
     FastLED.setBrightness(brightness);
     FastLED.show();
 
-    ledUpdate = true;
+    ledUpdate = false;
+    ledUpdateTimer = 0;
 
 #ifdef BLUETOOTH
-    Bluetooth_clear(); // updating every led takes time
+    // Bluetooth_clear(); // updating every led takes time
 #endif
     curTime = millis();
   }
 
+  ledUpdateTimer += loopTime;
 #endif
 
   loopTime = millis() - curTime;

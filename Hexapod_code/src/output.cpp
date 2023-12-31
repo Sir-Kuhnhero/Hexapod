@@ -265,7 +265,7 @@ void Led_init()
 
 void Led_update(const int &ledID)
 {
-    leds[ledID] = CRGB(uint8_t(colorR), uint8_t(colorG), uint8_t(colorB));
+    leds[ledID] = CRGB(uint8_t(float(colorG) * 2.5f), uint8_t(float(colorR) * 2.5f), uint8_t(float(colorB) * 2.5f));
 }
 
 void Led_update(const int &ledID, CRGB color)

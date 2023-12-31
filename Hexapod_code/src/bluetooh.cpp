@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include <header.h>
 
-int Data[8];
+int Data[11];
 
 #ifdef BLUETOOTH
 
@@ -9,7 +9,6 @@ SoftwareSerial bluetoothSerial(rxBluetooth, txBluetooth);
 
 size_t indexOfCurDataByte = 0;
 bool readData = false;
-
 
 void Bluetooth_init()
 {
@@ -19,8 +18,8 @@ void Bluetooth_init()
 // read one Byte from Bluetooth module
 void Bluetooth_read()
 {
-    // Check if data is available from the Bluetooth module
-    if (bluetoothSerial.available())
+    // while data is available from the Bluetooth module
+    while (bluetoothSerial.available())
     {
         if (!readData)
         {
@@ -38,6 +37,8 @@ void Bluetooth_read()
             {
                 readData = false;
                 indexOfCurDataByte = 0;
+
+                Bluetooth_clear();
             }
 
             Data[indexOfCurDataByte] = data;
@@ -74,17 +75,19 @@ void Bluetooth_map()
 
     groundClearance = Data[6];
     stepRadius = Data[7];
-/*
-    if (brightness != int(Data[8]) || colorR != int(Data[9]) || colorG != int(Data[10]) || colorB != int(Data[11]))
+
+#ifdef WS2812B_LED
+    // data for LEDs
+    if (colorR != Data[8] || colorG != Data[9] || colorB != Data[10])
     {
+        // if the color has changed we need to update the LEDs
         ledUpdate = true;
     }
 
-    brightness = int(Data[8]);
-    colorR = int(Data[9]);
-    colorG = int(Data[10]);
-    colorB = int(Data[11]);
-*/
+    colorR = int(Data[8]);
+    colorG = int(Data[9]);
+    colorB = int(Data[10]);
+#endif
 }
 
 #endif
