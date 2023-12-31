@@ -73,9 +73,9 @@ Leg[5].Servo[2].ch = 31;
 
 The Leg naming is as followes:
 
-![alt text](https://github.com/Sir-Kuhnhero/Hexapod/blob/main/Leg%20naming%20&driver%20placement.png?raw=true)
+![alt text](https://github.com/Sir-Kuhnhero/Hexapod/blob/main/Leg%20naming%20%26%20driver%20placement.jpg?raw=true)
 
-![alt text](https://github.com/Sir-Kuhnhero/Hexapod/blob/main/servo%20placement.png?raw=true)
+![alt text](https://github.com/Sir-Kuhnhero/Hexapod/blob/main/servo%20placement.jpg?raw=true)
 
 On that node ensure that you bridge the first solder pad on one of the servo drivers. This will ensure that it uses a different I2C address. This second driver will continue the channel numbering of the first (16-31).
 
