@@ -1,8 +1,2 @@
 # Auto detect text files and perform LF normalization
 * text=auto
-*.stl filter=lfs diff=lfs merge=lfs -text
-*.f3z filter=lfs diff=lfs merge=lfs -text
-*.3mf filter=lfs diff=lfs merge=lfs -text
-Hexapod[[:space:]]GCode filter=lfs diff=lfs merge=lfs -text
-Hexapod[[:space:]]GCode/** filter=lfs diff=lfs merge=lfs -text
-Hexapod_GCode/** filter=lfs diff=lfs merge=lfs -text
